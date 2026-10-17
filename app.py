@@ -38,7 +38,7 @@ st.set_page_config(
 PAYTR_AYLIK_LINK = ""   # TODO: BURAYA PAYTR AYLIK ODEME LINKI EKLENECEK
 PAYTR_YILLIK_LINK = ""  # TODO: BURAYA PAYTR YILLIK ODEME LINKI EKLENECEK
 
-VALID_REF_CODES = ["finans101", "finans102", "finans103"]
+VALID_REF_CODES = ["finans101", "finans102", "finans103", "finans104"]
 ADMIN_EMAIL = "denizzdinc@icloud.com"
 DB_PATH = "finanser.db"
 
@@ -71,167 +71,163 @@ GIDER_KATEGORILERI = [
 # ---------------------------------------------------------------------------
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 
 # ===================================================================
-#  CSS — Apple iOS Dark Mode & Kusursuz Buton/Menu Tasarimi
+#  CSS — MOYA (Krem & Zeytin Yesili) + StoreUI Sidebar Tasarimi
 # ===================================================================
 def inject_css():
     css = """<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
 
-/* İkon fontlarını (upload ikonu vb.) bozmamak için sadece metin etiketlerine font uygula */
-html, body, .stApp, p, h1, h2, h3, h4, h5, h6, label, input, textarea, button {
-    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif !important;
+/* İkon fontlarını bozmamak için sadece metin etiketlerine font uygula */
+html, body, .stApp, p, label, input, textarea, button {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
+    color: #2B3326;
 }
 
+/* MOYA Tarzı Zarif Serif Başlıklar */
+h1, h2, h3, .serif-title {
+    font-family: 'Cormorant Garamond', Georgia, serif !important;
+    color: #2B3326 !important;
+    letter-spacing: 0.3px !important;
+}
+
+/* Ana Arka Plan: Sıcak Krem / Bej */
 .stApp {
-    background-color: #000000 !important;
+    background-color: #EAE4DC !important;
 }
 
 header[data-testid="stHeader"] {
-    background-color: #000000 !important;
+    background-color: #EAE4DC !important;
 }
 
-/* --- SOL MENÜ (Apple iOS Ayarlar Görünümü) --- */
+/* --- SOL MENÜ (StoreUI Minimal & Modern Görünüm) --- */
 [data-testid="stSidebar"] {
-    background-color: #000000 !important;
-    border-right: 1px solid #1C1C1E !important;
+    background-color: #F6F3EE !important;
+    border-right: 1px solid #DFD8CE !important;
 }
 
-/* Radyo butonlarını Apple iOS liste grubuna (Inset Grouped List) dönüştür */
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] {
-    background-color: #1C1C1E !important;
-    border-radius: 14px !important;
-    padding: 4px !important;
-    border: 1px solid #2C2C2E !important;
-    gap: 0px !important;
+    background-color: transparent !important;
+    padding: 4px 0 !important;
+    border: none !important;
+    gap: 6px !important;
 }
 
-/* Klasik yuvarlak radyo ikonunu tamamen gizle */
+/* Klasik radyo yuvarlağını gizle */
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label > div:first-child {
     display: none !important;
 }
 
-/* Menü satırları */
+/* StoreUI Menü Satırları */
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label {
-    padding: 12px 16px !important;
+    padding: 13px 18px !important;
     margin: 0 !important;
-    border-radius: 10px !important;
-    border-bottom: 1px solid #2C2C2E !important;
+    border-radius: 14px !important;
+    border: none !important;
     width: 100% !important;
     display: flex !important;
-    justify-content: space-between !important;
     align-items: center !important;
     cursor: pointer !important;
-    transition: all 0.15s ease !important;
+    transition: all 0.2s ease !important;
     background-color: transparent !important;
 }
 
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:last-child {
-    border-bottom: none !important;
-}
-
-/* Sağdaki iOS '>' oku */
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label::after {
-    content: "›";
-    color: #636366;
-    font-size: 20px;
-    font-weight: 500;
-    line-height: 1;
-}
-
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label p {
-    color: #F5F5F7 !important;
-    font-size: 14px !important;
+    color: #2B3326 !important;
+    font-size: 15px !important;
     font-weight: 500 !important;
     margin: 0 !important;
+    letter-spacing: 0.1px !important;
 }
 
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:hover {
-    background-color: #2C2C2E !important;
+    background-color: #EAE4DC !important;
 }
 
-/* Seçili olan sekme: Apple Mavisi (#0A84FF) */
+/* Seçili Sekme: Koyu Zeytin Yeşili Hap (StoreUI Aktif Sekme Stili) */
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked),
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"] {
-    background-color: #0A84FF !important;
-    border-bottom-color: transparent !important;
+    background-color: #3A4432 !important;
+    box-shadow: 0 4px 12px rgba(58, 68, 50, 0.18) !important;
 }
 
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked) p,
 [data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"] p {
-    color: #FFFFFF !important;
+    color: #F6F3EE !important;
     font-weight: 600 !important;
 }
 
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked)::after,
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"]::after {
-    color: #FFFFFF !important;
-}
-
-/* --- BUTONLAR (Apple Mavisi & Kırmızısı - Tam Okunurluk) --- */
+/* --- BUTONLAR (MOYA Koyu Zeytin Yeşili & Tam Okunurluk) --- */
 .stButton > button,
 .stFormSubmitButton > button,
 .stDownloadButton > button {
-    background-color: #007AFF !important;
+    background-color: #3A4432 !important;
     background-image: none !important;
-    color: #FFFFFF !important;
+    color: #F6F3EE !important;
     font-weight: 600 !important;
-    font-size: 14px !important;
+    font-size: 13px !important;
+    letter-spacing: 0.6px !important;
+    text-transform: uppercase !important;
     border: none !important;
     border-radius: 12px !important;
-    padding: 11px 24px !important;
+    padding: 12px 24px !important;
     transition: all 0.2s ease !important;
-    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25) !important;
+    box-shadow: 0 2px 8px rgba(58, 68, 50, 0.15) !important;
 }
 
-/* Buton içindeki tüm yazıların kesin olarak beyaz görünmesini sağla */
 .stButton > button *,
 .stFormSubmitButton > button *,
 .stDownloadButton > button * {
-    color: #FFFFFF !important;
+    color: #F6F3EE !important;
 }
 
 .stButton > button:hover,
 .stFormSubmitButton > button:hover,
 .stDownloadButton > button:hover {
-    background-color: #0062CC !important;
+    background-color: #2B3326 !important;
     transform: translateY(-1px) !important;
 }
 
-/* Secondary olarak işaretlenen butonlar (Çıkış Yap, İptal vb.) Apple Kırmızısı (#FF3B30) olsun */
+/* İkincil Butonlar (Çıkış Yap, İptal vb.) — Minimal Çerçeveli */
 button[kind="secondary"] {
-    background-color: #FF3B30 !important;
-    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.25) !important;
+    background-color: transparent !important;
+    border: 1px solid #C5BBAE !important;
+    box-shadow: none !important;
+}
+button[kind="secondary"] * {
+    color: #5C5852 !important;
 }
 button[kind="secondary"]:hover {
-    background-color: #D70015 !important;
+    background-color: #DFD8CE !important;
+    border-color: #3A4432 !important;
+}
+button[kind="secondary"]:hover * {
+    color: #2B3326 !important;
 }
 
-/* --- FILE UPLOADER (Çift 'upload' Yazısı Hatası Çözümü) --- */
+/* --- FILE UPLOADER --- */
 [data-testid="stFileUploader"] {
-    background-color: #1C1C1E !important;
-    border-radius: 14px !important;
-    border: 1px dashed #3A3A3C !important;
-    padding: 20px !important;
+    background-color: #F6F3EE !important;
+    border-radius: 16px !important;
+    border: 1px dashed #C5BBAE !important;
+    padding: 22px !important;
 }
 [data-testid="stFileUploader"] section {
     background-color: transparent !important;
 }
 [data-testid="stFileUploader"] button {
-    background-color: #007AFF !important;
-    color: #FFFFFF !important;
+    background-color: #3A4432 !important;
+    color: #F6F3EE !important;
     font-weight: 600 !important;
     border-radius: 10px !important;
     border: none !important;
     padding: 8px 18px !important;
 }
 [data-testid="stFileUploader"] button * {
-    color: #FFFFFF !important;
+    color: #F6F3EE !important;
 }
-/* Upload kutusundaki bozuk ikon metnini gizle */
 [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] span[data-testid="stIconMaterial"],
 [data-testid="stFileUploader"] small + span {
     display: none !important;
@@ -242,38 +238,42 @@ button[kind="secondary"]:hover {
 .stNumberInput > div > div > input,
 .stDateInput > div > div > input,
 .stTextArea textarea {
-    background-color: #1C1C1E !important;
-    color: #F5F5F7 !important;
-    border: 1px solid #2C2C2E !important;
+    background-color: #F6F3EE !important;
+    color: #2B3326 !important;
+    border: 1px solid #D5CDC2 !important;
     border-radius: 12px !important;
+}
+.stTextInput > div > div > input::placeholder,
+.stTextArea textarea::placeholder {
+    color: #9E9689 !important;
 }
 .stTextInput > div > div > input:focus,
 .stNumberInput > div > div > input:focus,
 .stTextArea textarea:focus {
-    border-color: #0A84FF !important;
-    box-shadow: 0 0 0 1px #0A84FF !important;
+    border-color: #3A4432 !important;
+    box-shadow: 0 0 0 1px #3A4432 !important;
 }
 .stSelectbox > div > div {
-    background-color: #1C1C1E !important;
-    color: #F5F5F7 !important;
-    border: 1px solid #2C2C2E !important;
+    background-color: #F6F3EE !important;
+    color: #2B3326 !important;
+    border: 1px solid #D5CDC2 !important;
     border-radius: 12px !important;
 }
-[data-baseweb="select"] * { color: #F5F5F7 !important; }
-[data-baseweb="popover"] { background-color: #1C1C1E !important; border: 1px solid #2C2C2E !important; }
-[data-baseweb="menu"] { background-color: #1C1C1E !important; }
-[role="option"] { color: #F5F5F7 !important; }
-[role="option"]:hover { background-color: #2C2C2E !important; }
-[aria-selected="true"] { background-color: #0A84FF !important; color: #FFFFFF !important; }
+[data-baseweb="select"] * { color: #2B3326 !important; }
+[data-baseweb="popover"] { background-color: #F6F3EE !important; border: 1px solid #D5CDC2 !important; }
+[data-baseweb="menu"] { background-color: #F6F3EE !important; }
+[role="option"] { color: #2B3326 !important; }
+[role="option"]:hover { background-color: #EAE4DC !important; }
+[aria-selected="true"] { background-color: #3A4432 !important; color: #F6F3EE !important; }
 
 .InputInstructions, [data-testid="InputInstructions"] { display: none !important; }
 footer { visibility: hidden !important; }
 #MainMenu { visibility: hidden !important; }
 [data-testid="stForm"] {
-    background-color: #1C1C1E !important;
-    border: 1px solid #2C2C2E !important;
-    border-radius: 16px !important;
-    padding: 24px !important;
+    background-color: #E1D9CE !important;
+    border: 1px solid #D5CDC2 !important;
+    border-radius: 18px !important;
+    padding: 26px !important;
 }
 </style>"""
     st.markdown(css, unsafe_allow_html=True)
@@ -509,7 +509,7 @@ def get_total_belge():
 
 
 # ===================================================================
-#  Gemini ile Belge Isleme
+#  Gemini ile Belge Isleme (404 Hatasini Onleyen Akilli Model Secici)
 # ===================================================================
 def process_document_with_ai(file_bytes, mime_type):
     prompt = (
@@ -526,18 +526,44 @@ def process_document_with_ai(file_bytes, mime_type):
         "SADECE JSON dondur, baska hicbir sey yazma. "
         "Eger bir bilgiyi cikaramiyorsan mantikli bir tahmin yap."
     )
+
+    # Güncel modelleri sırayla dene, 404 verirse API'deki mevcut modelleri otomatik bul
+    candidate_models = [
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-1.5-flash",
+        "gemini-1.5-pro",
+    ]
     try:
-        resp = gemini_model.generate_content(
-            [prompt, {"mime_type": mime_type, "data": file_bytes}]
-        )
-        text = resp.text.strip()
-        if text.startswith("```"):
-            text = re.sub(r"^```(?:json)?\s*", "", text)
-            text = re.sub(r"\s*```$", "", text)
-        data = json.loads(text)
-        return {"ok": True, "data": data}
-    except Exception as e:
-        return {"ok": False, "err": str(e)}
+        for m in genai.list_models():
+            if "generateContent" in getattr(m, "supported_generation_methods", []):
+                short_name = m.name.replace("models/", "")
+                if short_name not in candidate_models:
+                    candidate_models.append(short_name)
+    except Exception:
+        pass
+
+    last_err = ""
+    for model_name in candidate_models:
+        try:
+            model = genai.GenerativeModel(model_name)
+            resp = model.generate_content(
+                [prompt, {"mime_type": mime_type, "data": file_bytes}]
+            )
+            text = resp.text.strip()
+            if text.startswith("```"):
+                text = re.sub(r"^```(?:json)?\s*", "", text)
+                text = re.sub(r"\s*```$", "", text)
+            data = json.loads(text)
+            return {"ok": True, "data": data}
+        except Exception as e:
+            last_err = str(e)
+            if "404" in last_err or "not found" in last_err.lower() or "not supported" in last_err.lower():
+                continue
+            else:
+                return {"ok": False, "err": last_err}
+
+    return {"ok": False, "err": last_err}
 
 
 # ===================================================================
@@ -552,7 +578,7 @@ def generate_excel(rows):
         "Tutar (TL)", "KDV (TL)", "Aciklama", "Belge Turu", "Kaynak",
     ]
     hfont = Font(bold=True, color="FFFFFF", size=11)
-    hfill = PatternFill(start_color="0D0D0D", end_color="0D0D0D", fill_type="solid")
+    hfill = PatternFill(start_color="3A4432", end_color="3A4432", fill_type="solid")
     for col, h in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col, value=h)
         cell.font = hfont
@@ -587,10 +613,10 @@ def generate_excel(rows):
 def get_greeting(name):
     h = datetime.now().hour
     if 6 <= h < 12:
-        return f"Gunaydin, {name}"
+        return f"Gunaydin, {name}."
     elif 12 <= h < 18:
-        return f"Merhaba, {name}"
-    return f"Iyi aksamlar, {name}"
+        return f"Merhaba, {name}."
+    return f"Iyi aksamlar, {name}."
 
 
 def format_tl(val):
@@ -619,31 +645,31 @@ def format_date_tr(dt_str):
 
 
 # ===================================================================
-#  HTML Karti Olusturucular
+#  HTML Karti Olusturucular (MOYA Estetigi)
 # ===================================================================
-def card_dark(content_html):
+def card_soft(content_html):
     return (
-        '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:16px;'
-        'padding:24px;margin-bottom:16px;">'
+        '<div style="background:#E1D9CE;border:1px solid #D5CDC2;border-radius:18px;'
+        'padding:24px 28px;margin-bottom:16px;">'
         + content_html
         + "</div>"
     )
 
 
-def card_gradient(content_html):
+def card_olive(content_html):
     return (
-        '<div style="background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%);'
-        'border-radius:16px;padding:28px 32px;margin-bottom:20px;">'
+        '<div style="background:linear-gradient(135deg,#3A4432 0%,#2B3326 100%);'
+        'border-radius:20px;padding:30px 34px;margin-bottom:22px;color:#EAE4DC;">'
         + content_html
         + "</div>"
     )
 
 
-def stat_card(label, value, accent="#0A84FF"):
+def stat_card(label, value, accent="#2B3326"):
     return (
-        '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:16px;'
+        '<div style="background:#F6F3EE;border:1px solid #DFD8CE;border-radius:18px;'
         'padding:22px;text-align:center;">'
-        f'<p style="color:#8E8E93;font-size:13px;margin:0 0 6px 0;font-weight:500;">{label}</p>'
+        f'<p style="color:#7A756C;font-size:12px;text-transform:uppercase;letter-spacing:0.8px;margin:0 0 8px 0;font-weight:600;">{label}</p>'
         f'<p style="color:{accent};font-size:24px;font-weight:700;margin:0;">{value}</p>'
         "</div>"
     )
@@ -654,15 +680,15 @@ def stat_card(label, value, accent="#0A84FF"):
 # ===================================================================
 def render_auth_page():
     st.markdown(
-'<div style="text-align:center;padding:40px 0 10px 0;">'
-'<h1 style="color:#F5F5F7;font-size:42px;font-weight:800;letter-spacing:-1px;margin:0;">Finanser</h1>'
-'<p style="color:#8E8E93;font-size:15px;margin:8px 0 0 0;">On Muhasebe & Finansal Takip</p>'
+'<div style="text-align:center;padding:44px 0 16px 0;">'
+'<h1 style="color:#2B3326;font-size:48px;font-weight:700;letter-spacing:2px;margin:0;">FINANSER</h1>'
+'<p style="color:#7A756C;font-size:13px;letter-spacing:1.5px;text-transform:uppercase;margin:8px 0 0 0;">On Muhasebe & Finansal Takip</p>'
 '</div>', unsafe_allow_html=True)
 
     if "auth_mode" not in st.session_state:
         st.session_state.auth_mode = "login"
 
-    col_l, col_m, col_r = st.columns([1, 1.4, 1])
+    col_l, col_m, col_r = st.columns([1, 1.3, 1])
     with col_m:
         if st.session_state.auth_mode == "login":
             render_login_form()
@@ -671,9 +697,9 @@ def render_auth_page():
 
 
 def render_login_form():
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Giris Yap</h3>'
-        '<p style="color:#8E8E93;font-size:13px;margin:0 0 16px 0;">Hesabiniza erisim saglayiniz</p>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:24px;">Giris Yap</h3>'
+        '<p style="color:#6E6A63;font-size:13px;margin:0;">Hesabiniza erisim saglayiniz</p>'
     ), unsafe_allow_html=True)
 
     with st.form("login_form", clear_on_submit=False):
@@ -691,19 +717,19 @@ def render_login_form():
                 else:
                     st.error(res["err"])
 
-    st.markdown('<p style="text-align:center;margin-top:12px;color:#8E8E93;font-size:13px;">'
+    st.markdown('<p style="text-align:center;margin-top:12px;color:#6E6A63;font-size:13px;">'
                 'Hesabiniz yok mu?</p>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
-        if st.button("Kayit Ol", key="go_register", type="primary", use_container_width=True):
+        if st.button("Kayit Ol", key="go_register", type="secondary", use_container_width=True):
             st.session_state.auth_mode = "register"
             st.rerun()
 
 
 def render_register_form():
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Kayit Ol</h3>'
-        '<p style="color:#8E8E93;font-size:13px;margin:0 0 16px 0;">Yeni hesap olusturunuz</p>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:24px;">Kayit Ol</h3>'
+        '<p style="color:#6E6A63;font-size:13px;margin:0;">Yeni hesap olusturunuz</p>'
     ), unsafe_allow_html=True)
 
     with st.form("register_form", clear_on_submit=False):
@@ -730,11 +756,11 @@ def render_register_form():
                 else:
                     st.error(res["err"])
 
-    st.markdown('<p style="text-align:center;margin-top:12px;color:#8E8E93;font-size:13px;">'
+    st.markdown('<p style="text-align:center;margin-top:12px;color:#6E6A63;font-size:13px;">'
                 'Zaten hesabiniz var mi?</p>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
-        if st.button("Giris Yap", key="go_login", type="primary", use_container_width=True):
+        if st.button("Giris Yap", key="go_login", type="secondary", use_container_width=True):
             st.session_state.auth_mode = "login"
             st.rerun()
 
@@ -744,49 +770,55 @@ def render_register_form():
 # ===================================================================
 def render_dashboard(user):
     greeting = get_greeting(user["ad"])
-    st.markdown(card_gradient(
-        f'<h2 style="color:#0D0D0D;margin:0;font-weight:800;font-size:28px;">{greeting}</h2>'
-        f'<p style="color:#333;margin:6px 0 0 0;font-size:14px;">Finansal durumunuzun ozeti asagida yer almaktadir.</p>'
-    ), unsafe_allow_html=True)
+    st.markdown(
+        f'<div style="padding:4px 0 18px 0;">'
+        f'<h2 style="color:#2B3326;margin:0;font-weight:700;font-size:34px;">{greeting}</h2>'
+        f'<p style="color:#6E6A63;margin:4px 0 0 0;font-size:14px;">Finansal durumunuzun guncel ozeti.</p>'
+        f'</div>',
+        unsafe_allow_html=True,
+    )
 
     stats = get_user_stats(user["id"])
     gelir = stats["toplam_gelir"]
     gider = stats["toplam_gider"]
     bakiye = gelir - gider
 
-    c1, c2, c3, c4 = st.columns(4)
+    st.markdown(card_olive(
+        '<p style="color:#C5BBAE;font-size:12px;text-transform:uppercase;letter-spacing:1.2px;margin:0 0 6px 0;">MEVCUT BAKIYE</p>'
+        f'<h2 style="color:#F6F3EE !important;margin:0;font-size:38px;font-weight:700;">{format_tl(bakiye)}</h2>'
+    ), unsafe_allow_html=True)
+
+    c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown(stat_card("Toplam Gelir", format_tl(gelir), "#30D158"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Gelir", format_tl(gelir), "#3A5A40"), unsafe_allow_html=True)
     with c2:
-        st.markdown(stat_card("Toplam Gider", format_tl(gider), "#FF453A"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Gider", format_tl(gider), "#9E3B33"), unsafe_allow_html=True)
     with c3:
-        color = "#30D158" if bakiye >= 0 else "#FF453A"
-        st.markdown(stat_card("Bakiye", format_tl(bakiye), color), unsafe_allow_html=True)
-    with c4:
         st.markdown(stat_card("Belge Kullanimi",
-                              f'{user["kullanilan_belge"]} / {user["kota"]}', "#0A84FF"),
+                              f'{user["kullanilan_belge"]} / {user["kota"]}', "#3A4432"),
                     unsafe_allow_html=True)
 
-    st.markdown('<div style="height:12px;"></div>', unsafe_allow_html=True)
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 16px 0;font-weight:700;font-size:18px;">Son Islemler</h3>'
-    ), unsafe_allow_html=True)
+    st.markdown('<div style="height:18px;"></div>', unsafe_allow_html=True)
+    st.markdown(
+        '<h3 style="color:#2B3326;margin:0 0 14px 0;font-weight:700;font-size:22px;">Son Islemler</h3>',
+        unsafe_allow_html=True,
+    )
 
     txns = get_user_transactions(user["id"])
     if not txns:
-        st.markdown('<p style="color:#8E8E93;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
+        st.markdown(card_soft('<p style="color:#6E6A63;text-align:center;margin:0;padding:12px;">Henuz islem bulunmuyor.</p>'),
                     unsafe_allow_html=True)
     else:
         for t in txns[:10]:
-            tip_color = "#30D158" if t["islem_tipi"] == "Gelir" else "#FF453A"
+            tip_color = "#3A5A40" if t["islem_tipi"] == "Gelir" else "#9E3B33"
             tip_sign = "+" if t["islem_tipi"] == "Gelir" else "-"
             row_html = (
-                '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
-                'padding:14px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">'
+                '<div style="background:#E1D9CE;border:1px solid #D5CDC2;border-radius:16px;'
+                'padding:16px 22px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;">'
                 '<div>'
-                f'<span style="color:#F5F5F7;font-weight:600;font-size:14px;">{t.get("firma","—")}</span>'
-                f'<span style="color:#8E8E93;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
-                f'<span style="color:#636366;font-size:12px;margin-left:12px;">{format_date_tr(t.get("tarih",""))}</span>'
+                f'<span style="color:#2B3326;font-weight:600;font-size:15px;">{t.get("firma","—")}</span>'
+                f'<span style="color:#6E6A63;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
+                f'<span style="color:#8C857B;font-size:12px;margin-left:12px;">{format_date_tr(t.get("tarih",""))}</span>'
                 '</div>'
                 f'<span style="color:{tip_color};font-weight:700;font-size:15px;">{tip_sign} {format_tl(t.get("tutar",0))}</span>'
                 '</div>'
@@ -798,18 +830,18 @@ def render_dashboard(user):
 #  SAYFA: Belge Yukle (AI ile Okuma)
 # ===================================================================
 def render_belge_yukle(user):
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Belge Yukle</h3>'
-        '<p style="color:#8E8E93;font-size:13px;margin:0;">Fatura, fis, dekont veya ekstre yukleyerek yapay zeka ile otomatik okutun.</p>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:24px;">Belge Yukle</h3>'
+        '<p style="color:#6E6A63;font-size:13px;margin:0;">Fatura, fis, dekont veya ekstre yukleyerek yapay zeka ile otomatik okutun.</p>'
     ), unsafe_allow_html=True)
 
     user = get_user_info(user["id"])
     if user["kullanilan_belge"] >= user["kota"]:
-        st.markdown(card_gradient(
-            '<h3 style="color:#0D0D0D;margin:0 0 8px 0;font-weight:700;">Belge Kotaniz Doldu</h3>'
-            f'<p style="color:#333;margin:0;font-size:14px;">Mevcut paketiniz: {user["paket"]} — '
+        st.markdown(card_olive(
+            '<h3 style="color:#F6F3EE !important;margin:0 0 8px 0;font-weight:700;">Belge Kotaniz Doldu</h3>'
+            f'<p style="color:#DFD8CE;margin:0;font-size:14px;">Mevcut paketiniz: {user["paket"]} — '
             f'{user["kullanilan_belge"]}/{user["kota"]} belge kullanildi.</p>'
-            '<p style="color:#333;margin:8px 0 0 0;font-size:14px;">'
+            '<p style="color:#DFD8CE;margin:8px 0 0 0;font-size:14px;">'
             'Belge yuklemeye devam etmek icin paketinizi yukseltiniz.</p>'
         ), unsafe_allow_html=True)
         if st.button("Paket Yukselt", key="quota_upgrade", type="primary"):
@@ -818,8 +850,8 @@ def render_belge_yukle(user):
         return
 
     st.markdown(
-        f'<p style="color:#8E8E93;font-size:13px;margin-bottom:12px;">Kalan belge hakki: '
-        f'{user["kota"] - user["kullanilan_belge"]} / {user["kota"]}</p>',
+        f'<p style="color:#6E6A63;font-size:13px;margin-bottom:12px;">Kalan belge hakki: '
+        f'<strong>{user["kota"] - user["kullanilan_belge"]} / {user["kota"]}</strong></p>',
         unsafe_allow_html=True,
     )
 
@@ -846,9 +878,9 @@ def render_belge_yukle(user):
 
     if "ai_result" in st.session_state:
         data = st.session_state.ai_result
-        st.markdown(card_gradient(
-            '<h3 style="color:#0D0D0D;margin:0 0 4px 0;font-weight:700;">Okunan Veriler</h3>'
-            '<p style="color:#333;font-size:13px;margin:0;">Asagidaki bilgileri kontrol edip gerekirse duzenleyiniz.</p>'
+        st.markdown(card_soft(
+            '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:22px;">Okunan Veriler</h3>'
+            '<p style="color:#6E6A63;font-size:13px;margin:0;">Asagidaki bilgileri kontrol edip gerekirse duzenleyiniz.</p>'
         ), unsafe_allow_html=True)
 
         c1, c2 = st.columns(2)
@@ -888,9 +920,9 @@ def render_belge_yukle(user):
 #  SAYFA: Manuel Giris
 # ===================================================================
 def render_manuel_giris(user):
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Manuel Veri Girisi</h3>'
-        '<p style="color:#8E8E93;font-size:13px;margin:0;">Gelir veya gider bilgilerinizi elle giriniz.</p>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:24px;">Manuel Veri Girisi</h3>'
+        '<p style="color:#6E6A63;font-size:13px;margin:0;">Gelir veya gider bilgilerinizi elle giriniz.</p>'
     ), unsafe_allow_html=True)
 
     with st.form("manual_form", clear_on_submit=True):
@@ -928,14 +960,14 @@ def render_manuel_giris(user):
 #  SAYFA: Islemlerim
 # ===================================================================
 def render_islemlerim(user):
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Islemlerim</h3>'
-        '<p style="color:#8E8E93;font-size:13px;margin:0;">Tum gelir ve gider kayitlariniz.</p>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:24px;">Islemlerim</h3>'
+        '<p style="color:#6E6A63;font-size:13px;margin:0;">Tum gelir ve gider kayitlariniz.</p>'
     ), unsafe_allow_html=True)
 
     txns = get_user_transactions(user["id"])
     if not txns:
-        st.markdown('<p style="color:#8E8E93;text-align:center;padding:40px;">Henuz islem bulunmuyor.</p>',
+        st.markdown('<p style="color:#6E6A63;text-align:center;padding:40px;">Henuz islem bulunmuyor.</p>',
                     unsafe_allow_html=True)
         return
 
@@ -951,31 +983,31 @@ def render_islemlerim(user):
     st.markdown('<div style="height:8px;"></div>', unsafe_allow_html=True)
 
     for t in txns:
-        tip_color = "#30D158" if t["islem_tipi"] == "Gelir" else "#FF453A"
+        tip_color = "#3A5A40" if t["islem_tipi"] == "Gelir" else "#9E3B33"
         tip_sign = "+" if t["islem_tipi"] == "Gelir" else "-"
         tip_label = "GELIR" if t["islem_tipi"] == "Gelir" else "GIDER"
         kdv_str = f" (KDV: {format_tl(t.get('kdv', 0))})" if t.get("kdv", 0) > 0 else ""
         kaynak_badge = ""
         if t.get("kaynak") == "Yapay Zeka":
-            kaynak_badge = '<span style="background:#0A84FF;color:#FFFFFF;font-size:10px;padding:2px 8px;border-radius:6px;margin-left:8px;">AI</span>'
+            kaynak_badge = '<span style="background:#3A4432;color:#F6F3EE;font-size:10px;padding:2px 8px;border-radius:6px;margin-left:8px;">AI</span>'
         row_html = (
-            '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
-            'padding:16px 20px;margin-bottom:8px;">'
+            '<div style="background:#E1D9CE;border:1px solid #D5CDC2;border-radius:16px;'
+            'padding:16px 22px;margin-bottom:10px;">'
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
             '<div>'
             f'<span style="color:{tip_color};font-size:11px;font-weight:700;letter-spacing:.5px;">{tip_label}</span>'
             f'{kaynak_badge}'
-            f'<span style="color:#636366;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
+            f'<span style="color:#8C857B;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
             '</div>'
             f'<span style="color:{tip_color};font-weight:700;font-size:16px;">{tip_sign} {format_tl(t.get("tutar",0))}{kdv_str}</span>'
             '</div>'
             '<div>'
-            f'<span style="color:#F5F5F7;font-weight:600;font-size:14px;">{t.get("firma","—")}</span>'
-            f'<span style="color:#8E8E93;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
+            f'<span style="color:#2B3326;font-weight:600;font-size:15px;">{t.get("firma","—")}</span>'
+            f'<span style="color:#6E6A63;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
             '</div>'
         )
         if t.get("aciklama"):
-            row_html += f'<p style="color:#8E8E93;font-size:12px;margin:4px 0 0 0;">{t["aciklama"]}</p>'
+            row_html += f'<p style="color:#6E6A63;font-size:12px;margin:4px 0 0 0;">{t["aciklama"]}</p>'
         row_html += "</div>"
         st.markdown(row_html, unsafe_allow_html=True)
 
@@ -984,21 +1016,21 @@ def render_islemlerim(user):
 #  SAYFA: Paket Yukselt
 # ===================================================================
 def render_paket_yukselt(user):
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Paket Yukselt</h3>'
-        '<p style="color:#8E8E93;font-size:13px;margin:0;">Mevcut paketinizi yukselterek belge kotanizi artirin.</p>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:24px;">Paket Yukselt</h3>'
+        '<p style="color:#6E6A63;font-size:13px;margin:0;">Mevcut paketinizi yukselterek belge kotanizi artirin.</p>'
     ), unsafe_allow_html=True)
 
     current_html = (
-        '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
-        'padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;">'
+        '<div style="background:#F6F3EE;border:1px solid #DFD8CE;border-radius:14px;'
+        'padding:16px 22px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;">'
         '<div>'
-        '<span style="color:#8E8E93;font-size:13px;">Mevcut Paket:</span>'
-        f'<span style="color:#F5F5F7;font-weight:700;font-size:15px;margin-left:10px;">{user["paket"]}</span>'
+        '<span style="color:#6E6A63;font-size:13px;">Mevcut Paket:</span>'
+        f'<span style="color:#2B3326;font-weight:700;font-size:15px;margin-left:10px;">{user["paket"]}</span>'
         '</div>'
         '<div>'
-        '<span style="color:#8E8E93;font-size:13px;">Kullanim:</span>'
-        f'<span style="color:#0A84FF;font-weight:700;font-size:15px;margin-left:10px;">{user["kullanilan_belge"]} / {user["kota"]}</span>'
+        '<span style="color:#6E6A63;font-size:13px;">Kullanim:</span>'
+        f'<span style="color:#3A4432;font-weight:700;font-size:15px;margin-left:10px;">{user["kullanilan_belge"]} / {user["kota"]}</span>'
         '</div>'
         '</div>'
     )
@@ -1007,17 +1039,17 @@ def render_paket_yukselt(user):
     c1, c2 = st.columns(2, gap="large")
     with c1:
         st.markdown(
-'<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:16px;padding:32px;text-align:center;">'
-'<p style="color:#0A84FF;font-size:12px;font-weight:600;letter-spacing:1px;margin:0 0 8px 0;">AYLIK</p>'
-'<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:800;font-size:22px;">Premium Paket</h3>'
-'<p style="color:#8E8E93;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
-'<p style="color:#F5F5F7;font-size:32px;font-weight:800;margin:0 0 4px 0;">600 TL</p>'
-'<p style="color:#8E8E93;font-size:13px;margin:0 0 24px 0;">/ ay</p>'
+'<div style="background:#F6F3EE;border:1px solid #D5CDC2;border-radius:20px;padding:32px;text-align:center;">'
+'<p style="color:#6E6A63;font-size:11px;font-weight:700;letter-spacing:1.2px;margin:0 0 8px 0;">AYLIK PLAN</p>'
+'<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:26px;">Premium Paket</h3>'
+'<p style="color:#6E6A63;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
+'<p style="color:#2B3326;font-size:34px;font-weight:700;margin:0 0 4px 0;">600 TL</p>'
+'<p style="color:#8C857B;font-size:13px;margin:0 0 24px 0;">/ ay</p>'
 '<div style="text-align:left;margin-bottom:20px;">'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Excel ile indirme</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Oncelikli destek</p>'
+'<p style="color:#4A4742;font-size:13px;margin:6px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
+'<p style="color:#4A4742;font-size:13px;margin:6px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
+'<p style="color:#4A4742;font-size:13px;margin:6px 0;">&#10003; Excel ile indirme</p>'
+'<p style="color:#4A4742;font-size:13px;margin:6px 0;">&#10003; Oncelikli destek</p>'
 '</div>'
 '</div>', unsafe_allow_html=True)
         if st.button("Satin Al ve Yukselt", key="buy_monthly", type="primary", use_container_width=True):
@@ -1029,20 +1061,20 @@ def render_paket_yukselt(user):
 
     with c2:
         st.markdown(
-'<div style="background:#1C1C1E;border:2px solid #0A84FF;border-radius:16px;padding:32px;text-align:center;position:relative;">'
-'<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#0A84FF;'
-'color:#FFFFFF;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:.5px;">AVANTAJLI</div>'
-'<p style="color:#0A84FF;font-size:12px;font-weight:600;letter-spacing:1px;margin:0 0 8px 0;">YILLIK</p>'
-'<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:800;font-size:22px;">Premium Paket</h3>'
-'<p style="color:#8E8E93;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
-'<p style="color:#F5F5F7;font-size:32px;font-weight:800;margin:0 0 4px 0;">5.500 TL</p>'
-'<p style="color:#8E8E93;font-size:13px;margin:0 0 24px 0;">/ yil (aylik ~458 TL)</p>'
+'<div style="background:#E1D9CE;border:2px solid #3A4432;border-radius:20px;padding:32px;text-align:center;position:relative;">'
+'<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#3A4432;'
+'color:#F6F3EE;font-size:10px;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:1px;">AVANTAJLI</div>'
+'<p style="color:#3A4432;font-size:11px;font-weight:700;letter-spacing:1.2px;margin:0 0 8px 0;">YILLIK PLAN</p>'
+'<h3 style="color:#2B3326;margin:0 0 4px 0;font-weight:700;font-size:26px;">Premium Paket</h3>'
+'<p style="color:#6E6A63;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
+'<p style="color:#2B3326;font-size:34px;font-weight:700;margin:0 0 4px 0;">5.500 TL</p>'
+'<p style="color:#6E6A63;font-size:13px;margin:0 0 24px 0;">/ yil (aylik ~458 TL)</p>'
 '<div style="text-align:left;margin-bottom:20px;">'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Excel ile indirme</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Oncelikli destek</p>'
-'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; 2 ay tasarruf</p>'
+'<p style="color:#2B3326;font-size:13px;margin:6px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
+'<p style="color:#2B3326;font-size:13px;margin:6px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
+'<p style="color:#2B3326;font-size:13px;margin:6px 0;">&#10003; Excel ile indirme</p>'
+'<p style="color:#2B3326;font-size:13px;margin:6px 0;">&#10003; Oncelikli destek</p>'
+'<p style="color:#2B3326;font-size:13px;margin:6px 0;">&#10003; 2 ay tasarruf avantaji</p>'
 '</div>'
 '</div>', unsafe_allow_html=True)
         if st.button("Satin Al ve Yukselt", key="buy_yearly", type="primary", use_container_width=True):
@@ -1057,9 +1089,9 @@ def render_paket_yukselt(user):
 #  SAYFA: Yonetim Paneli (Sadece Admin)
 # ===================================================================
 def render_admin_panel():
-    st.markdown(card_gradient(
-        '<h2 style="color:#0D0D0D;margin:0;font-weight:800;font-size:24px;">Yonetim Paneli</h2>'
-        '<p style="color:#333;margin:6px 0 0 0;font-size:14px;">Tum kullanici ve islem verilerini buradan yonetiniz.</p>'
+    st.markdown(card_olive(
+        '<h2 style="color:#F6F3EE !important;margin:0;font-weight:700;font-size:28px;">Yonetim Paneli</h2>'
+        '<p style="color:#DFD8CE;margin:6px 0 0 0;font-size:14px;">Tum kullanici ve islem verilerini buradan yonetiniz.</p>'
     ), unsafe_allow_html=True)
 
     all_users = get_all_users()
@@ -1067,37 +1099,37 @@ def render_admin_panel():
 
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown(stat_card("Toplam Uye", str(len(all_users)), "#0A84FF"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Uye", str(len(all_users)), "#3A4432"), unsafe_allow_html=True)
     with c2:
-        st.markdown(stat_card("Toplam Okutulan Belge", str(total_belge), "#0A84FF"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Okutulan Belge", str(total_belge), "#3A4432"), unsafe_allow_html=True)
 
     st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 16px 0;font-weight:700;font-size:18px;">Kullanici Listesi</h3>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 8px 0;font-weight:700;font-size:20px;">Kullanici Listesi</h3>'
     ), unsafe_allow_html=True)
 
     for u in all_users:
         ref_str = u.get("referans_kodu", "") or "-"
         reg_date = format_date_tr(u.get("created_at", ""))
         row_html = (
-            '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
-            'padding:14px 20px;margin-bottom:6px;">'
-            f'<span style="color:#F5F5F7;font-weight:600;font-size:14px;">{u["ad"]} / {u["email"]}</span>'
-            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#0A84FF;font-weight:600;font-size:13px;">{u["paket"]}</span>'
-            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#8E8E93;font-size:13px;">Kullanim: {u["kullanilan_belge"]}/{u["kota"]}</span>'
-            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#8E8E93;font-size:13px;">Referans: {ref_str}</span>'
-            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#8E8E93;font-size:13px;">Kayit: {reg_date}</span>'
+            '<div style="background:#F6F3EE;border:1px solid #DFD8CE;border-radius:14px;'
+            'padding:14px 20px;margin-bottom:8px;">'
+            f'<span style="color:#2B3326;font-weight:600;font-size:14px;">{u["ad"]} / {u["email"]}</span>'
+            f'<span style="color:#B5ADA2;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#3A4432;font-weight:700;font-size:13px;">{u["paket"]}</span>'
+            f'<span style="color:#B5ADA2;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#6E6A63;font-size:13px;">Kullanim: {u["kullanilan_belge"]}/{u["kota"]}</span>'
+            f'<span style="color:#B5ADA2;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#6E6A63;font-size:13px;">Referans: {ref_str}</span>'
+            f'<span style="color:#B5ADA2;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#6E6A63;font-size:13px;">Kayit: {reg_date}</span>'
             '</div>'
         )
         st.markdown(row_html, unsafe_allow_html=True)
 
     st.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 16px 0;font-weight:700;font-size:18px;">Paket Degistir</h3>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 8px 0;font-weight:700;font-size:20px;">Paket Degistir</h3>'
     ), unsafe_allow_html=True)
 
     user_options = {f"{u['ad']} ({u['email']})": u["id"] for u in all_users}
@@ -1116,26 +1148,26 @@ def render_admin_panel():
             st.rerun()
 
     st.markdown('<div style="height:20px;"></div>', unsafe_allow_html=True)
-    st.markdown(card_dark(
-        '<h3 style="color:#F5F5F7;margin:0 0 16px 0;font-weight:700;font-size:18px;">Son Islemler (Tum Kullanicilar)</h3>'
+    st.markdown(card_soft(
+        '<h3 style="color:#2B3326;margin:0 0 8px 0;font-weight:700;font-size:20px;">Son Islemler (Tum Kullanicilar)</h3>'
     ), unsafe_allow_html=True)
 
     all_txns = get_all_transactions_admin()
     if not all_txns:
-        st.markdown('<p style="color:#8E8E93;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
+        st.markdown('<p style="color:#6E6A63;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
                     unsafe_allow_html=True)
     else:
         for t in all_txns[:50]:
-            tip_color = "#30D158" if t.get("islem_tipi") == "Gelir" else "#FF453A"
+            tip_color = "#3A5A40" if t.get("islem_tipi") == "Gelir" else "#9E3B33"
             tip_sign = "+" if t.get("islem_tipi") == "Gelir" else "-"
             row_html = (
-                '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
-                'padding:12px 20px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">'
+                '<div style="background:#F6F3EE;border:1px solid #DFD8CE;border-radius:14px;'
+                'padding:12px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">'
                 '<div>'
-                f'<span style="color:#0A84FF;font-size:12px;font-weight:600;">{t.get("ad","?")} / {t.get("email","?")}</span>'
-                f'<span style="color:#636366;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
-                f'<span style="color:#8E8E93;font-size:12px;margin-left:10px;">{t.get("firma","—")}</span>'
-                f'<span style="color:#8E8E93;font-size:12px;margin-left:10px;">{t.get("kategori","")}</span>'
+                f'<span style="color:#3A4432;font-size:12px;font-weight:700;">{t.get("ad","?")} / {t.get("email","?")}</span>'
+                f'<span style="color:#8C857B;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
+                f'<span style="color:#2B3326;font-size:13px;font-weight:500;margin-left:10px;">{t.get("firma","—")}</span>'
+                f'<span style="color:#6E6A63;font-size:12px;margin-left:10px;">{t.get("kategori","")}</span>'
                 '</div>'
                 f'<span style="color:{tip_color};font-weight:700;font-size:14px;">{tip_sign} {format_tl(t.get("tutar",0))}</span>'
                 '</div>'
@@ -1164,37 +1196,60 @@ def main():
         render_auth_page()
         return
 
-    # --- Sidebar (Apple iOS Settings Tarzı) ---
+    # --- Sidebar (StoreUI Tarzı Minimal & İkonlu Menü) ---
     with st.sidebar:
         st.markdown(
-'<div style="padding:12px 4px 10px 4px;">'
-'<h2 style="color:#F5F5F7;font-weight:800;font-size:28px;letter-spacing:-0.8px;margin:0;">Finanser</h2>'
+'<div style="padding:18px 8px 20px 8px;display:flex;align-items:center;gap:12px;">'
+'<div style="width:34px;height:34px;border-radius:10px;background:#3A4432;color:#F6F3EE;display:flex;align-items:center;justify-content:center;font-family:\'Cormorant Garamond\',serif;font-weight:700;font-size:20px;">F</div>'
+'<span style="color:#2B3326;font-weight:700;font-size:22px;letter-spacing:-0.3px;">Finanser</span>'
 '</div>', unsafe_allow_html=True)
 
-        # Apple iOS Profil Kartı
-        initials = "".join([part[0].upper() for part in user["ad"].split()[:2]]) or "U"
         st.markdown(
-'<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:14px;padding:14px;margin:8px 0 18px 0;display:flex;align-items:center;gap:12px;">'
-f'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0A84FF,#0055D4);color:#FFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">{initials}</div>'
-'<div style="overflow:hidden;">'
-f'<p style="color:#F5F5F7;font-weight:600;font-size:15px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["ad"]}</p>'
-f'<p style="color:#8E8E93;font-size:12px;margin:2px 0 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["email"]}</p>'
-f'<p style="color:#0A84FF;font-size:11px;font-weight:600;margin:4px 0 0 0;">{user["paket"]} &bull; {user["kullanilan_belge"]}/{user["kota"]} belge</p>'
-'</div>'
-'</div>', unsafe_allow_html=True)
+'<p style="color:#9E9689;font-size:11px;font-weight:700;letter-spacing:1.2px;margin:0 0 8px 10px;">MENU</p>',
+unsafe_allow_html=True)
 
-        pages = ["Genel Bakis", "Belge Yukle", "Manuel Giris", "Islemlerim", "Paket Yukselt"]
+        menu_items = [
+            ("Genel Bakis", "pie◷  Genel Bakis"),
+            ("Belge Yukle", "◈  Belge Yukle"),
+            ("Manuel Giris", "✎  Manuel Giris"),
+            ("Islemlerim", "▤  Islemlerim"),
+            ("Paket Yukselt", "✦  Paket Yukselt"),
+        ]
         if user["rol"] == "admin":
-            pages.append("Yonetim Paneli")
+            menu_items.append(("Yonetim Paneli", "⚙  Yonetim Paneli"))
+
+        pages = [item[0] for item in menu_items]
+        labels_map = {item[0]: item[1].replace("pie◷", "◔") for item in menu_items}
 
         default_idx = 0
         if "nav_page" in st.session_state and st.session_state.nav_page in pages:
             default_idx = pages.index(st.session_state.nav_page)
 
-        page = st.radio("Menu", pages, index=default_idx, label_visibility="collapsed", key="sidebar_nav")
+        page = st.radio(
+            "Menu",
+            pages,
+            index=default_idx,
+            format_func=lambda x: labels_map.get(x, x),
+            label_visibility="collapsed",
+            key="sidebar_nav",
+        )
         st.session_state.nav_page = page
 
-        st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
+        st.markdown(
+'<p style="color:#9E9689;font-size:11px;font-weight:700;letter-spacing:1.2px;margin:28px 0 8px 10px;">HESAP</p>',
+unsafe_allow_html=True)
+
+        initials = "".join([part[0].upper() for part in user["ad"].split()[:2]]) or "U"
+        st.markdown(
+'<div style="background:#EAE4DC;border:1px solid #DFD8CE;border-radius:16px;padding:14px;margin:4px 0 16px 0;display:flex;align-items:center;gap:12px;">'
+f'<div style="width:40px;height:40px;border-radius:50%;background:#3A4432;color:#F6F3EE;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0;">{initials}</div>'
+'<div style="overflow:hidden;">'
+f'<p style="color:#2B3326;font-weight:600;font-size:14px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["ad"]}</p>'
+f'<p style="color:#6E6A63;font-size:11px;margin:2px 0 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["email"]}</p>'
+f'<p style="color:#3A4432;font-size:11px;font-weight:700;margin:4px 0 0 0;">{user["paket"]} &bull; {user["kullanilan_belge"]}/{user["kota"]} belge</p>'
+'</div>'
+'</div>', unsafe_allow_html=True)
+
         if st.button("Cikis Yap", key="logout_btn", type="secondary", use_container_width=True):
             logout_user(user["id"])
             if "token" in st.query_params:
