@@ -101,64 +101,59 @@ h1, h2, h3, .serif-title {
 header[data-testid="stHeader"] {
     background-color: #EAE4DC !important;
 }
-
-/* --- SOL MENÜ (StoreUI Minimal & Modern Görünüm) --- */
+/* --- SOL MENÜ (2. Görseldeki Minimal Tasarım - Noktasız) --- */
 [data-testid="stSidebar"] {
-    background-color: #F6F3EE !important;
-    border-right: 1px solid #DFD8CE !important;
+    background-color: #FBF9F6 !important;
+    border-right: 1px solid #EAE4DC !important;
 }
 
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] {
+/* Menüdeki Seçili Olmayan (Normal) Satırlar */
+[data-testid="stSidebar"] button[kind="secondary"] {
     background-color: transparent !important;
-    padding: 4px 0 !important;
+    color: #7A756C !important;
     border: none !important;
-    gap: 6px !important;
-}
-
-/* Klasik radyo yuvarlağını gizle */
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label > div:first-child {
-    display: none !important;
-}
-
-/* StoreUI Menü Satırları */
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label {
-    padding: 13px 18px !important;
-    margin: 0 !important;
-    border-radius: 14px !important;
-    border: none !important;
-    width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    cursor: pointer !important;
-    transition: all 0.2s ease !important;
-    background-color: transparent !important;
-}
-
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label p {
-    color: #2B3326 !important;
-    font-size: 15px !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
     font-weight: 500 !important;
-    margin: 0 !important;
-    letter-spacing: 0.1px !important;
+    text-transform: none !important;
+    letter-spacing: 0px !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    margin-bottom: 2px !important;
+}
+[data-testid="stSidebar"] button[kind="secondary"] * {
+    color: #7A756C !important;
+    font-weight: 500 !important;
+}
+[data-testid="stSidebar"] button[kind="secondary"]:hover {
+    background-color: #F2EFE9 !important;
+}
+[data-testid="stSidebar"] button[kind="secondary"]:hover * {
+    color: #1C1C1E !important;
 }
 
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:hover {
-    background-color: #EAE4DC !important;
+/* Menüdeki Seçili Olan (Aktif) Satır — Görseldeki Yumuşak Gri Kutu & Koyu Yazı */
+[data-testid="stSidebar"] button[kind="primary"] {
+    background-color: #EFECE6 !important;
+    color: #1C1C1E !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 12px !important;
+    padding: 10px 14px !important;
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    letter-spacing: 0px !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    margin-bottom: 2px !important;
 }
-
-/* Seçili Sekme: Koyu Zeytin Yeşili Hap (StoreUI Aktif Sekme Stili) */
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked),
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"] {
-    background-color: #3A4432 !important;
-    box-shadow: 0 4px 12px rgba(58, 68, 50, 0.18) !important;
+[data-testid="stSidebar"] button[kind="primary"] * {
+    color: #1C1C1E !important;
+    font-weight: 700 !important;
 }
-
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked) p,
-[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"] p {
-    color: #F6F3EE !important;
-    font-weight: 600 !important;
-}
-
 /* --- BUTONLAR (MOYA Koyu Zeytin Yeşili & Tam Okunurluk) --- */
 .stButton > button,
 .stFormSubmitButton > button,
@@ -509,7 +504,7 @@ def get_total_belge():
 
 
 # ===================================================================
-#  Gemini ile Belge Isleme (404 Hatasini Onleyen Akilli Model Secici)
+#  Gemini ile Belge Isleme (Sadece Gorsel Onayli Modeller)
 # ===================================================================
 def process_document_with_ai(file_bytes, mime_type):
     prompt = (
@@ -527,21 +522,13 @@ def process_document_with_ai(file_bytes, mime_type):
         "Eger bir bilgiyi cikaramiyorsan mantikli bir tahmin yap."
     )
 
-    # Güncel modelleri sırayla dene, 404 verirse API'deki mevcut modelleri otomatik bul
+    # Sadece ve sadece gorsel okuyabilen (vision destekli) kesin calisan modeller:
     candidate_models = [
-        "gemini-2.5-flash",
-        "gemini-2.0-flash",
         "gemini-1.5-flash",
+        "gemini-1.5-flash-latest",
         "gemini-1.5-pro",
+        "gemini-1.5-pro-latest"
     ]
-    try:
-        for m in genai.list_models():
-            if "generateContent" in getattr(m, "supported_generation_methods", []):
-                short_name = m.name.replace("models/", "")
-                if short_name not in candidate_models:
-                    candidate_models.append(short_name)
-    except Exception:
-        pass
 
     last_err = ""
     for model_name in candidate_models:
@@ -558,10 +545,7 @@ def process_document_with_ai(file_bytes, mime_type):
             return {"ok": True, "data": data}
         except Exception as e:
             last_err = str(e)
-            if "404" in last_err or "not found" in last_err.lower() or "not supported" in last_err.lower():
-                continue
-            else:
-                return {"ok": False, "err": last_err}
+            continue # Hata verirse (ornegin API anlik kapanirsa) hemen diger saglam modele gec
 
     return {"ok": False, "err": last_err}
 
@@ -1195,62 +1179,50 @@ def main():
             del st.query_params["token"]
         render_auth_page()
         return
-
-    # --- Sidebar (StoreUI Tarzı Minimal & İkonlu Menü) ---
+        
+  # --- Sidebar (Noktasız Minimal Dashboard Menüsü) ---
     with st.sidebar:
         st.markdown(
-'<div style="padding:18px 8px 20px 8px;display:flex;align-items:center;gap:12px;">'
-'<div style="width:34px;height:34px;border-radius:10px;background:#3A4432;color:#F6F3EE;display:flex;align-items:center;justify-content:center;font-family:\'Cormorant Garamond\',serif;font-weight:700;font-size:20px;">F</div>'
-'<span style="color:#2B3326;font-weight:700;font-size:22px;letter-spacing:-0.3px;">Finanser</span>'
+'<div style="padding:12px 6px 24px 6px;display:flex;align-items:center;gap:12px;">'
+'<div style="width:36px;height:36px;border-radius:11px;background:#1C1C1E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;">⦿</div>'
+'<span style="color:#1C1C1E;font-weight:700;font-size:19px;letter-spacing:-0.3px;">Finanser</span>'
 '</div>', unsafe_allow_html=True)
 
-        st.markdown(
-'<p style="color:#9E9689;font-size:11px;font-weight:700;letter-spacing:1.2px;margin:0 0 8px 10px;">MENU</p>',
-unsafe_allow_html=True)
-
         menu_items = [
-            ("Genel Bakis", "pie◷  Genel Bakis"),
-            ("Belge Yukle", "◈  Belge Yukle"),
-            ("Manuel Giris", "✎  Manuel Giris"),
-            ("Islemlerim", "▤  Islemlerim"),
-            ("Paket Yukselt", "✦  Paket Yukselt"),
+            ("Genel Bakis", "⌂   Genel Bakis"),
+            ("Belge Yukle", "⊞   Belge Yukle"),
+            ("Manuel Giris", "✎   Manuel Giris"),
+            ("Islemlerim", "☰   Islemlerim"),
+            ("Paket Yukselt", "✧   Paket Yukselt"),
         ]
         if user["rol"] == "admin":
-            menu_items.append(("Yonetim Paneli", "⚙  Yonetim Paneli"))
+            menu_items.append(("Yonetim Paneli", "⚙   Yonetim Paneli"))
 
-        pages = [item[0] for item in menu_items]
-        labels_map = {item[0]: item[1].replace("pie◷", "◔") for item in menu_items}
+        if "nav_page" not in st.session_state:
+            st.session_state.nav_page = "Genel Bakis"
 
-        default_idx = 0
-        if "nav_page" in st.session_state and st.session_state.nav_page in pages:
-            default_idx = pages.index(st.session_state.nav_page)
+        for page_key, page_label in menu_items:
+            is_active = (st.session_state.nav_page == page_key)
+            btn_type = "primary" if is_active else "secondary"
+            if st.button(page_label, key=f"nav_{page_key}", type=btn_type, use_container_width=True):
+                st.session_state.nav_page = page_key
+                st.rerun()
 
-        page = st.radio(
-            "Menu",
-            pages,
-            index=default_idx,
-            format_func=lambda x: labels_map.get(x, x),
-            label_visibility="collapsed",
-            key="sidebar_nav",
-        )
-        st.session_state.nav_page = page
+        page = st.session_state.nav_page
 
-        st.markdown(
-'<p style="color:#9E9689;font-size:11px;font-weight:700;letter-spacing:1.2px;margin:28px 0 8px 10px;">HESAP</p>',
-unsafe_allow_html=True)
+        st.markdown('<div style="height:28px;"></div>', unsafe_allow_html=True)
 
         initials = "".join([part[0].upper() for part in user["ad"].split()[:2]]) or "U"
         st.markdown(
-'<div style="background:#EAE4DC;border:1px solid #DFD8CE;border-radius:16px;padding:14px;margin:4px 0 16px 0;display:flex;align-items:center;gap:12px;">'
-f'<div style="width:40px;height:40px;border-radius:50%;background:#3A4432;color:#F6F3EE;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex-shrink:0;">{initials}</div>'
+'<div style="background:#EFECE6;border-radius:14px;padding:12px;margin:4px 0 12px 0;display:flex;align-items:center;gap:10px;">'
+f'<div style="width:36px;height:36px;border-radius:10px;background:#1C1C1E;color:#FFFFFF;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:13px;flex-shrink:0;">{initials}</div>'
 '<div style="overflow:hidden;">'
-f'<p style="color:#2B3326;font-weight:600;font-size:14px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["ad"]}</p>'
-f'<p style="color:#6E6A63;font-size:11px;margin:2px 0 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["email"]}</p>'
-f'<p style="color:#3A4432;font-size:11px;font-weight:700;margin:4px 0 0 0;">{user["paket"]} &bull; {user["kullanilan_belge"]}/{user["kota"]} belge</p>'
+f'<p style="color:#1C1C1E;font-weight:600;font-size:13px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["ad"]}</p>'
+f'<p style="color:#7A756C;font-size:11px;margin:2px 0 0 0;">{user["paket"]} • {user["kullanilan_belge"]}/{user["kota"]}</p>'
 '</div>'
 '</div>', unsafe_allow_html=True)
 
-        if st.button("Cikis Yap", key="logout_btn", type="secondary", use_container_width=True):
+        if st.button("↪   Cikis Yap", key="logout_btn", type="secondary", use_container_width=True):
             logout_user(user["id"])
             if "token" in st.query_params:
                 del st.query_params["token"]
