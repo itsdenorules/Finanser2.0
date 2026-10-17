@@ -504,7 +504,7 @@ def get_total_belge():
 
 
 # ===================================================================
-#  Gemini ile Belge Isleme (Sadece Gorsel Onayli Modeller)
+#  Gemini ile Belge Isleme (Guncel 2.5 ve 2.0 Gorsel Modelleri)
 # ===================================================================
 def process_document_with_ai(file_bytes, mime_type):
     prompt = (
@@ -522,13 +522,24 @@ def process_document_with_ai(file_bytes, mime_type):
         "Eger bir bilgiyi cikaramiyorsan mantikli bir tahmin yap."
     )
 
-    # Sadece ve sadece gorsel okuyabilen (vision destekli) kesin calisan modeller:
+    # 1.5 serisi kaldirildi. Sadece aktif olan 2.5 ve 2.0 gorsel modelleri:
     candidate_models = [
-        "gemini-1.5-flash",
-        "gemini-1.5-flash-latest",
-        "gemini-1.5-pro",
-        "gemini-1.5-pro-latest"
+        "gemini-2.5-flash",
+        "gemini-2.0-flash",
+        "gemini-2.0-flash-lite",
+        "gemini-2.5-pro",
     ]
+
+    # Yedek kontrol: TTS (ses) ve alakasiz modelleri kesin olarak filtrele
+    try:
+        for m in genai.list_models():
+            if "generateContent" in getattr(m, "supported_generation_methods", []):
+                name = m.name.replace("models/", "")
+                yasakli = ["tts", "audio", "imagen", "embedding", "aqa", "vision", "1.0", "1.5"]
+                if not any(y in name.lower() for y in yasakli) and name not in candidate_models:
+                    candidate_models.append(name)
+    except Exception:
+        pass
 
     last_err = ""
     for model_name in candidate_models:
@@ -545,10 +556,9 @@ def process_document_with_ai(file_bytes, mime_type):
             return {"ok": True, "data": data}
         except Exception as e:
             last_err = str(e)
-            continue # Hata verirse (ornegin API anlik kapanirsa) hemen diger saglam modele gec
+            continue
 
     return {"ok": False, "err": last_err}
-
 
 # ===================================================================
 #  Excel Uretimi
