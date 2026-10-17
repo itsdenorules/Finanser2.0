@@ -4,7 +4,7 @@
 # ============================================================================
 #  Gereksinimler (requirements.txt):
 #    streamlit>=1.30.0
-#    google-generativeai
+#    google-generativeai>=0.8.0
 #    openpyxl
 #    Pillow
 # ============================================================================
@@ -71,86 +71,210 @@ GIDER_KATEGORILERI = [
 # ---------------------------------------------------------------------------
 GEMINI_API_KEY = st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
 
 # ===================================================================
-#  CSS — Tum gorunumu kontrol eden tek blok
+#  CSS — Apple iOS Dark Mode & Kusursuz Buton/Menu Tasarimi
 # ===================================================================
 def inject_css():
     css = """<style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-*{font-family:'Inter',sans-serif!important}
-.stApp{background-color:#0D0D0D!important}
-[data-testid="stSidebar"]{background-color:#111111!important;border-right:1px solid #1E1E1E!important}
-[data-testid="stSidebar"] *{color:#F5F5F7!important}
-header[data-testid="stHeader"]{background-color:#0D0D0D!important}
-.stApp p,.stApp span,.stApp label,.stApp div,.stApp h1,.stApp h2,.stApp h3,.stApp h4{color:#F5F5F7}
-.stButton>button,.stFormSubmitButton>button{
-background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%)!important;
-color:#0D0D0D!important;font-weight:700!important;border:none!important;
-border-radius:16px!important;padding:10px 28px!important;
-transition:all .2s ease!important;letter-spacing:.3px!important}
-.stButton>button:hover,.stFormSubmitButton>button:hover{
-opacity:.88!important;transform:translateY(-1px)!important}
-.stButton>button:active,.stFormSubmitButton>button:active{
-transform:translateY(0)!important;opacity:1!important}
-.stDownloadButton>button{
-background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%)!important;
-color:#0D0D0D!important;font-weight:700!important;border:none!important;
-border-radius:16px!important;padding:10px 28px!important;transition:all .2s ease!important}
-.stDownloadButton>button:hover{opacity:.88!important;transform:translateY(-1px)!important}
-.stTextInput>div>div>input,
-.stNumberInput>div>div>input,
-.stDateInput>div>div>input,
-.stTextArea textarea{
-background-color:#1A1A1A!important;color:#F5F5F7!important;
-border:1px solid #2A2A2A!important;border-radius:12px!important}
-.stTextInput>div>div>input:focus,
-.stNumberInput>div>div>input:focus,
-.stTextArea textarea:focus{
-border-color:#D4D8C8!important;box-shadow:0 0 0 1px #D4D8C8!important}
-.stSelectbox>div>div{
-background-color:#1A1A1A!important;color:#F5F5F7!important;
-border:1px solid #2A2A2A!important;border-radius:12px!important}
-[data-baseweb="select"] *{color:#F5F5F7!important}
-[data-baseweb="popover"]{background-color:#1A1A1A!important;border:1px solid #2A2A2A!important}
-[data-baseweb="menu"]{background-color:#1A1A1A!important}
-[role="option"]{color:#F5F5F7!important}
-[role="option"]:hover{background-color:#2A2A2A!important}
-[aria-selected="true"]{background-color:#333!important}
-.InputInstructions{display:none!important}
-[data-testid="InputInstructions"]{display:none!important}
-footer{visibility:hidden!important}
-#MainMenu{visibility:hidden!important}
-[data-testid="stFileUploader"]{background-color:#161616!important;border-radius:12px!important;border:1px dashed #2A2A2A!important;padding:16px!important}
-[data-testid="stFileUploader"] *{color:#F5F5F7!important}
-[data-testid="stFileUploader"] button{
-background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%)!important;
-color:#0D0D0D!important;font-weight:600!important;border-radius:12px!important;border:none!important}
-.stRadio>div{flex-direction:column;gap:2px}
-.stRadio label{
-background-color:transparent!important;padding:10px 14px!important;
-border-radius:10px!important;cursor:pointer!important;transition:background .15s!important;
-font-weight:500!important;font-size:14px!important}
-.stRadio label:hover{background-color:#1E1E1E!important}
-.stRadio label[data-checked="true"]{
-background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%)!important;
-color:#0D0D0D!important}
-.stTabs [data-baseweb="tab-list"]{gap:8px;background:transparent!important;border-bottom:1px solid #1E1E1E!important}
-.stTabs [data-baseweb="tab"]{
-background-color:#161616!important;color:#999!important;
-border-radius:10px 10px 0 0!important;padding:10px 22px!important;
-font-weight:500!important;border:none!important}
-.stTabs [aria-selected="true"]{
-background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%)!important;
-color:#0D0D0D!important;font-weight:700!important}
-.stTabs [data-baseweb="tab-panel"]{background:transparent!important;padding-top:20px!important}
-div[data-testid="stExpander"]{background-color:#161616!important;border:1px solid #1E1E1E!important;border-radius:12px!important}
-div[data-testid="stExpander"] *{color:#F5F5F7!important}
-.stAlert{border-radius:12px!important}
-hr{border-color:#1E1E1E!important}
-[data-testid="stForm"]{background-color:#161616!important;border:1px solid #1E1E1E!important;border-radius:16px!important;padding:24px!important}
+
+/* İkon fontlarını (upload ikonu vb.) bozmamak için sadece metin etiketlerine font uygula */
+html, body, .stApp, p, h1, h2, h3, h4, h5, h6, label, input, textarea, button {
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif !important;
+}
+
+.stApp {
+    background-color: #000000 !important;
+}
+
+header[data-testid="stHeader"] {
+    background-color: #000000 !important;
+}
+
+/* --- SOL MENÜ (Apple iOS Ayarlar Görünümü) --- */
+[data-testid="stSidebar"] {
+    background-color: #000000 !important;
+    border-right: 1px solid #1C1C1E !important;
+}
+
+/* Radyo butonlarını Apple iOS liste grubuna (Inset Grouped List) dönüştür */
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] {
+    background-color: #1C1C1E !important;
+    border-radius: 14px !important;
+    padding: 4px !important;
+    border: 1px solid #2C2C2E !important;
+    gap: 0px !important;
+}
+
+/* Klasik yuvarlak radyo ikonunu tamamen gizle */
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label > div:first-child {
+    display: none !important;
+}
+
+/* Menü satırları */
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label {
+    padding: 12px 16px !important;
+    margin: 0 !important;
+    border-radius: 10px !important;
+    border-bottom: 1px solid #2C2C2E !important;
+    width: 100% !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    cursor: pointer !important;
+    transition: all 0.15s ease !important;
+    background-color: transparent !important;
+}
+
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:last-child {
+    border-bottom: none !important;
+}
+
+/* Sağdaki iOS '>' oku */
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label::after {
+    content: "›";
+    color: #636366;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label p {
+    color: #F5F5F7 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin: 0 !important;
+}
+
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:hover {
+    background-color: #2C2C2E !important;
+}
+
+/* Seçili olan sekme: Apple Mavisi (#0A84FF) */
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked),
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"] {
+    background-color: #0A84FF !important;
+    border-bottom-color: transparent !important;
+}
+
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked) p,
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"] p {
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+}
+
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label:has(input:checked)::after,
+[data-testid="stSidebar"] .stRadio > div[role="radiogroup"] > label[data-checked="true"]::after {
+    color: #FFFFFF !important;
+}
+
+/* --- BUTONLAR (Apple Mavisi & Kırmızısı - Tam Okunurluk) --- */
+.stButton > button,
+.stFormSubmitButton > button,
+.stDownloadButton > button {
+    background-color: #007AFF !important;
+    background-image: none !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    border: none !important;
+    border-radius: 12px !important;
+    padding: 11px 24px !important;
+    transition: all 0.2s ease !important;
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25) !important;
+}
+
+/* Buton içindeki tüm yazıların kesin olarak beyaz görünmesini sağla */
+.stButton > button *,
+.stFormSubmitButton > button *,
+.stDownloadButton > button * {
+    color: #FFFFFF !important;
+}
+
+.stButton > button:hover,
+.stFormSubmitButton > button:hover,
+.stDownloadButton > button:hover {
+    background-color: #0062CC !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Secondary olarak işaretlenen butonlar (Çıkış Yap, İptal vb.) Apple Kırmızısı (#FF3B30) olsun */
+button[kind="secondary"] {
+    background-color: #FF3B30 !important;
+    box-shadow: 0 2px 8px rgba(255, 59, 48, 0.25) !important;
+}
+button[kind="secondary"]:hover {
+    background-color: #D70015 !important;
+}
+
+/* --- FILE UPLOADER (Çift 'upload' Yazısı Hatası Çözümü) --- */
+[data-testid="stFileUploader"] {
+    background-color: #1C1C1E !important;
+    border-radius: 14px !important;
+    border: 1px dashed #3A3A3C !important;
+    padding: 20px !important;
+}
+[data-testid="stFileUploader"] section {
+    background-color: transparent !important;
+}
+[data-testid="stFileUploader"] button {
+    background-color: #007AFF !important;
+    color: #FFFFFF !important;
+    font-weight: 600 !important;
+    border-radius: 10px !important;
+    border: none !important;
+    padding: 8px 18px !important;
+}
+[data-testid="stFileUploader"] button * {
+    color: #FFFFFF !important;
+}
+/* Upload kutusundaki bozuk ikon metnini gizle */
+[data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] span[data-testid="stIconMaterial"],
+[data-testid="stFileUploader"] small + span {
+    display: none !important;
+}
+
+/* --- INPUT ALANLARI --- */
+.stTextInput > div > div > input,
+.stNumberInput > div > div > input,
+.stDateInput > div > div > input,
+.stTextArea textarea {
+    background-color: #1C1C1E !important;
+    color: #F5F5F7 !important;
+    border: 1px solid #2C2C2E !important;
+    border-radius: 12px !important;
+}
+.stTextInput > div > div > input:focus,
+.stNumberInput > div > div > input:focus,
+.stTextArea textarea:focus {
+    border-color: #0A84FF !important;
+    box-shadow: 0 0 0 1px #0A84FF !important;
+}
+.stSelectbox > div > div {
+    background-color: #1C1C1E !important;
+    color: #F5F5F7 !important;
+    border: 1px solid #2C2C2E !important;
+    border-radius: 12px !important;
+}
+[data-baseweb="select"] * { color: #F5F5F7 !important; }
+[data-baseweb="popover"] { background-color: #1C1C1E !important; border: 1px solid #2C2C2E !important; }
+[data-baseweb="menu"] { background-color: #1C1C1E !important; }
+[role="option"] { color: #F5F5F7 !important; }
+[role="option"]:hover { background-color: #2C2C2E !important; }
+[aria-selected="true"] { background-color: #0A84FF !important; color: #FFFFFF !important; }
+
+.InputInstructions, [data-testid="InputInstructions"] { display: none !important; }
+footer { visibility: hidden !important; }
+#MainMenu { visibility: hidden !important; }
+[data-testid="stForm"] {
+    background-color: #1C1C1E !important;
+    border: 1px solid #2C2C2E !important;
+    border-radius: 16px !important;
+    padding: 24px !important;
+}
 </style>"""
     st.markdown(css, unsafe_allow_html=True)
 
@@ -499,7 +623,7 @@ def format_date_tr(dt_str):
 # ===================================================================
 def card_dark(content_html):
     return (
-        '<div style="background:#161616;border:1px solid #1E1E1E;border-radius:16px;'
+        '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:16px;'
         'padding:24px;margin-bottom:16px;">'
         + content_html
         + "</div>"
@@ -515,11 +639,11 @@ def card_gradient(content_html):
     )
 
 
-def stat_card(label, value, accent="#D4D8C8"):
+def stat_card(label, value, accent="#0A84FF"):
     return (
-        '<div style="background:#161616;border:1px solid #1E1E1E;border-radius:16px;'
+        '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:16px;'
         'padding:22px;text-align:center;">'
-        f'<p style="color:#888;font-size:13px;margin:0 0 6px 0;font-weight:500;">{label}</p>'
+        f'<p style="color:#8E8E93;font-size:13px;margin:0 0 6px 0;font-weight:500;">{label}</p>'
         f'<p style="color:{accent};font-size:24px;font-weight:700;margin:0;">{value}</p>'
         "</div>"
     )
@@ -532,7 +656,7 @@ def render_auth_page():
     st.markdown(
 '<div style="text-align:center;padding:40px 0 10px 0;">'
 '<h1 style="color:#F5F5F7;font-size:42px;font-weight:800;letter-spacing:-1px;margin:0;">Finanser</h1>'
-'<p style="color:#888;font-size:15px;margin:8px 0 0 0;">On Muhasebe & Finansal Takip</p>'
+'<p style="color:#8E8E93;font-size:15px;margin:8px 0 0 0;">On Muhasebe & Finansal Takip</p>'
 '</div>', unsafe_allow_html=True)
 
     if "auth_mode" not in st.session_state:
@@ -549,13 +673,13 @@ def render_auth_page():
 def render_login_form():
     st.markdown(card_dark(
         '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Giris Yap</h3>'
-        '<p style="color:#666;font-size:13px;margin:0 0 16px 0;">Hesabiniza erisim saglayiniz</p>'
+        '<p style="color:#8E8E93;font-size:13px;margin:0 0 16px 0;">Hesabiniza erisim saglayiniz</p>'
     ), unsafe_allow_html=True)
 
     with st.form("login_form", clear_on_submit=False):
         email = st.text_input("E-posta", placeholder="ornek@mail.com", key="login_email")
         pw = st.text_input("Sifre", type="password", placeholder="Sifrenizi giriniz", key="login_pw")
-        submitted = st.form_submit_button("Giris Yap", use_container_width=True)
+        submitted = st.form_submit_button("Giris Yap", type="primary", use_container_width=True)
         if submitted:
             if not email or not pw:
                 st.error("Lutfen tum alanlari doldurunuz.")
@@ -567,11 +691,11 @@ def render_login_form():
                 else:
                     st.error(res["err"])
 
-    st.markdown('<p style="text-align:center;margin-top:12px;color:#888;font-size:13px;">'
+    st.markdown('<p style="text-align:center;margin-top:12px;color:#8E8E93;font-size:13px;">'
                 'Hesabiniz yok mu?</p>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
-        if st.button("Kayit Ol", key="go_register", use_container_width=True):
+        if st.button("Kayit Ol", key="go_register", type="primary", use_container_width=True):
             st.session_state.auth_mode = "register"
             st.rerun()
 
@@ -579,7 +703,7 @@ def render_login_form():
 def render_register_form():
     st.markdown(card_dark(
         '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Kayit Ol</h3>'
-        '<p style="color:#666;font-size:13px;margin:0 0 16px 0;">Yeni hesap olusturunuz</p>'
+        '<p style="color:#8E8E93;font-size:13px;margin:0 0 16px 0;">Yeni hesap olusturunuz</p>'
     ), unsafe_allow_html=True)
 
     with st.form("register_form", clear_on_submit=False):
@@ -588,7 +712,7 @@ def render_register_form():
         pw = st.text_input("Sifre", type="password", placeholder="En az 6 karakter", key="reg_pw")
         pw2 = st.text_input("Sifre Tekrar", type="password", placeholder="Sifrenizi tekrar giriniz", key="reg_pw2")
         ref = st.text_input("Referans Kodu (Istege Bagli)", placeholder="Ornek: Finans101", key="reg_ref")
-        submitted = st.form_submit_button("Kayit Ol", use_container_width=True)
+        submitted = st.form_submit_button("Kayit Ol", type="primary", use_container_width=True)
         if submitted:
             if not ad or not email or not pw or not pw2:
                 st.error("Lutfen tum zorunlu alanlari doldurunuz.")
@@ -606,11 +730,11 @@ def render_register_form():
                 else:
                     st.error(res["err"])
 
-    st.markdown('<p style="text-align:center;margin-top:12px;color:#888;font-size:13px;">'
+    st.markdown('<p style="text-align:center;margin-top:12px;color:#8E8E93;font-size:13px;">'
                 'Zaten hesabiniz var mi?</p>', unsafe_allow_html=True)
     c1, c2, c3 = st.columns([1, 1, 1])
     with c2:
-        if st.button("Giris Yap", key="go_login", use_container_width=True):
+        if st.button("Giris Yap", key="go_login", type="primary", use_container_width=True):
             st.session_state.auth_mode = "login"
             st.rerun()
 
@@ -629,19 +753,18 @@ def render_dashboard(user):
     gelir = stats["toplam_gelir"]
     gider = stats["toplam_gider"]
     bakiye = gelir - gider
-    islem = stats["islem_sayisi"]
 
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.markdown(stat_card("Toplam Gelir", format_tl(gelir), "#7ECF8A"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Gelir", format_tl(gelir), "#30D158"), unsafe_allow_html=True)
     with c2:
-        st.markdown(stat_card("Toplam Gider", format_tl(gider), "#E57373"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Gider", format_tl(gider), "#FF453A"), unsafe_allow_html=True)
     with c3:
-        color = "#7ECF8A" if bakiye >= 0 else "#E57373"
+        color = "#30D158" if bakiye >= 0 else "#FF453A"
         st.markdown(stat_card("Bakiye", format_tl(bakiye), color), unsafe_allow_html=True)
     with c4:
         st.markdown(stat_card("Belge Kullanimi",
-                              f'{user["kullanilan_belge"]} / {user["kota"]}', "#D4D8C8"),
+                              f'{user["kullanilan_belge"]} / {user["kota"]}', "#0A84FF"),
                     unsafe_allow_html=True)
 
     st.markdown('<div style="height:12px;"></div>', unsafe_allow_html=True)
@@ -651,19 +774,19 @@ def render_dashboard(user):
 
     txns = get_user_transactions(user["id"])
     if not txns:
-        st.markdown('<p style="color:#666;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
+        st.markdown('<p style="color:#8E8E93;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
                     unsafe_allow_html=True)
     else:
         for t in txns[:10]:
-            tip_color = "#7ECF8A" if t["islem_tipi"] == "Gelir" else "#E57373"
+            tip_color = "#30D158" if t["islem_tipi"] == "Gelir" else "#FF453A"
             tip_sign = "+" if t["islem_tipi"] == "Gelir" else "-"
             row_html = (
-                '<div style="background:#161616;border:1px solid #1E1E1E;border-radius:12px;'
+                '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
                 'padding:14px 20px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;">'
                 '<div>'
                 f'<span style="color:#F5F5F7;font-weight:600;font-size:14px;">{t.get("firma","—")}</span>'
-                f'<span style="color:#555;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
-                f'<span style="color:#444;font-size:12px;margin-left:12px;">{format_date_tr(t.get("tarih",""))}</span>'
+                f'<span style="color:#8E8E93;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
+                f'<span style="color:#636366;font-size:12px;margin-left:12px;">{format_date_tr(t.get("tarih",""))}</span>'
                 '</div>'
                 f'<span style="color:{tip_color};font-weight:700;font-size:15px;">{tip_sign} {format_tl(t.get("tutar",0))}</span>'
                 '</div>'
@@ -677,7 +800,7 @@ def render_dashboard(user):
 def render_belge_yukle(user):
     st.markdown(card_dark(
         '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Belge Yukle</h3>'
-        '<p style="color:#666;font-size:13px;margin:0;">Fatura, fis, dekont veya ekstre yukleyerek yapay zeka ile otomatik okutun.</p>'
+        '<p style="color:#8E8E93;font-size:13px;margin:0;">Fatura, fis, dekont veya ekstre yukleyerek yapay zeka ile otomatik okutun.</p>'
     ), unsafe_allow_html=True)
 
     user = get_user_info(user["id"])
@@ -689,13 +812,13 @@ def render_belge_yukle(user):
             '<p style="color:#333;margin:8px 0 0 0;font-size:14px;">'
             'Belge yuklemeye devam etmek icin paketinizi yukseltiniz.</p>'
         ), unsafe_allow_html=True)
-        if st.button("Paket Yukselt", key="quota_upgrade"):
+        if st.button("Paket Yukselt", key="quota_upgrade", type="primary"):
             st.session_state.nav_page = "Paket Yukselt"
             st.rerun()
         return
 
     st.markdown(
-        f'<p style="color:#888;font-size:13px;margin-bottom:12px;">Kalan belge hakki: '
+        f'<p style="color:#8E8E93;font-size:13px;margin-bottom:12px;">Kalan belge hakki: '
         f'{user["kota"] - user["kullanilan_belge"]} / {user["kota"]}</p>',
         unsafe_allow_html=True,
     )
@@ -710,7 +833,7 @@ def render_belge_yukle(user):
         if uploaded.type and uploaded.type.startswith("image"):
             st.image(uploaded, caption="Yuklenen belge", use_container_width=True)
 
-        if st.button("Belgeyi Oku", key="read_doc"):
+        if st.button("Belgeyi Oku", key="read_doc", type="primary"):
             with st.spinner("Belge yapay zeka ile okunuyor..."):
                 file_bytes = uploaded.read()
                 mime = uploaded.type or "application/octet-stream"
@@ -746,7 +869,7 @@ def render_belge_yukle(user):
 
         bc1, bc2, bc3 = st.columns([1, 1, 1])
         with bc1:
-            if st.button("Onayla ve Kaydet", key="ai_save"):
+            if st.button("Onayla ve Kaydet", key="ai_save", type="primary"):
                 add_transaction(
                     user["id"], ai_tarih, ai_tip, ai_kategori, ai_firma,
                     ai_tutar, ai_kdv, ai_aciklama, ai_belge, "Yapay Zeka",
@@ -756,7 +879,7 @@ def render_belge_yukle(user):
                 st.success("Islem basariyla kaydedildi.")
                 st.rerun()
         with bc2:
-            if st.button("Iptal", key="ai_cancel"):
+            if st.button("Iptal", key="ai_cancel", type="secondary"):
                 del st.session_state.ai_result
                 st.rerun()
 
@@ -767,7 +890,7 @@ def render_belge_yukle(user):
 def render_manuel_giris(user):
     st.markdown(card_dark(
         '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Manuel Veri Girisi</h3>'
-        '<p style="color:#666;font-size:13px;margin:0;">Gelir veya gider bilgilerinizi elle giriniz.</p>'
+        '<p style="color:#8E8E93;font-size:13px;margin:0;">Gelir veya gider bilgilerinizi elle giriniz.</p>'
     ), unsafe_allow_html=True)
 
     with st.form("manual_form", clear_on_submit=True):
@@ -785,7 +908,7 @@ def render_manuel_giris(user):
             m_kdv = st.number_input("KDV (TL)", min_value=0.0, format="%.2f", key="m_kdv")
             m_aciklama = st.text_input("Aciklama", placeholder="Islem hakkinda kisa not", key="m_aciklama")
 
-        submitted = st.form_submit_button("Kaydet", use_container_width=True)
+        submitted = st.form_submit_button("Kaydet", type="primary", use_container_width=True)
         if submitted:
             if m_tutar <= 0:
                 st.error("Tutar sifirdan buyuk olmalidir.")
@@ -807,12 +930,12 @@ def render_manuel_giris(user):
 def render_islemlerim(user):
     st.markdown(card_dark(
         '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Islemlerim</h3>'
-        '<p style="color:#666;font-size:13px;margin:0;">Tum gelir ve gider kayitlariniz.</p>'
+        '<p style="color:#8E8E93;font-size:13px;margin:0;">Tum gelir ve gider kayitlariniz.</p>'
     ), unsafe_allow_html=True)
 
     txns = get_user_transactions(user["id"])
     if not txns:
-        st.markdown('<p style="color:#666;text-align:center;padding:40px;">Henuz islem bulunmuyor.</p>',
+        st.markdown('<p style="color:#8E8E93;text-align:center;padding:40px;">Henuz islem bulunmuyor.</p>',
                     unsafe_allow_html=True)
         return
 
@@ -828,31 +951,31 @@ def render_islemlerim(user):
     st.markdown('<div style="height:8px;"></div>', unsafe_allow_html=True)
 
     for t in txns:
-        tip_color = "#7ECF8A" if t["islem_tipi"] == "Gelir" else "#E57373"
+        tip_color = "#30D158" if t["islem_tipi"] == "Gelir" else "#FF453A"
         tip_sign = "+" if t["islem_tipi"] == "Gelir" else "-"
         tip_label = "GELIR" if t["islem_tipi"] == "Gelir" else "GIDER"
         kdv_str = f" (KDV: {format_tl(t.get('kdv', 0))})" if t.get("kdv", 0) > 0 else ""
         kaynak_badge = ""
         if t.get("kaynak") == "Yapay Zeka":
-            kaynak_badge = '<span style="background:#2A2A2A;color:#D4D8C8;font-size:10px;padding:2px 8px;border-radius:6px;margin-left:8px;">AI</span>'
+            kaynak_badge = '<span style="background:#0A84FF;color:#FFFFFF;font-size:10px;padding:2px 8px;border-radius:6px;margin-left:8px;">AI</span>'
         row_html = (
-            '<div style="background:#161616;border:1px solid #1E1E1E;border-radius:12px;'
+            '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
             'padding:16px 20px;margin-bottom:8px;">'
             '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">'
             '<div>'
             f'<span style="color:{tip_color};font-size:11px;font-weight:700;letter-spacing:.5px;">{tip_label}</span>'
             f'{kaynak_badge}'
-            f'<span style="color:#555;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
+            f'<span style="color:#636366;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
             '</div>'
             f'<span style="color:{tip_color};font-weight:700;font-size:16px;">{tip_sign} {format_tl(t.get("tutar",0))}{kdv_str}</span>'
             '</div>'
             '<div>'
             f'<span style="color:#F5F5F7;font-weight:600;font-size:14px;">{t.get("firma","—")}</span>'
-            f'<span style="color:#555;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
+            f'<span style="color:#8E8E93;font-size:12px;margin-left:12px;">{t.get("kategori","")}</span>'
             '</div>'
         )
         if t.get("aciklama"):
-            row_html += f'<p style="color:#666;font-size:12px;margin:4px 0 0 0;">{t["aciklama"]}</p>'
+            row_html += f'<p style="color:#8E8E93;font-size:12px;margin:4px 0 0 0;">{t["aciklama"]}</p>'
         row_html += "</div>"
         st.markdown(row_html, unsafe_allow_html=True)
 
@@ -863,19 +986,19 @@ def render_islemlerim(user):
 def render_paket_yukselt(user):
     st.markdown(card_dark(
         '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:700;">Paket Yukselt</h3>'
-        '<p style="color:#666;font-size:13px;margin:0;">Mevcut paketinizi yukselterek belge kotanizi artirin.</p>'
+        '<p style="color:#8E8E93;font-size:13px;margin:0;">Mevcut paketinizi yukselterek belge kotanizi artirin.</p>'
     ), unsafe_allow_html=True)
 
     current_html = (
-        '<div style="background:#1A1A1A;border:1px solid #2A2A2A;border-radius:12px;'
+        '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
         'padding:16px 20px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:center;">'
         '<div>'
-        '<span style="color:#888;font-size:13px;">Mevcut Paket:</span>'
+        '<span style="color:#8E8E93;font-size:13px;">Mevcut Paket:</span>'
         f'<span style="color:#F5F5F7;font-weight:700;font-size:15px;margin-left:10px;">{user["paket"]}</span>'
         '</div>'
         '<div>'
-        '<span style="color:#888;font-size:13px;">Kullanim:</span>'
-        f'<span style="color:#D4D8C8;font-weight:700;font-size:15px;margin-left:10px;">{user["kullanilan_belge"]} / {user["kota"]}</span>'
+        '<span style="color:#8E8E93;font-size:13px;">Kullanim:</span>'
+        f'<span style="color:#0A84FF;font-weight:700;font-size:15px;margin-left:10px;">{user["kullanilan_belge"]} / {user["kota"]}</span>'
         '</div>'
         '</div>'
     )
@@ -884,20 +1007,20 @@ def render_paket_yukselt(user):
     c1, c2 = st.columns(2, gap="large")
     with c1:
         st.markdown(
-'<div style="background:#161616;border:1px solid #2A2A2A;border-radius:16px;padding:32px;text-align:center;">'
-'<p style="color:#D4D8C8;font-size:12px;font-weight:600;letter-spacing:1px;margin:0 0 8px 0;">AYLIK</p>'
+'<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:16px;padding:32px;text-align:center;">'
+'<p style="color:#0A84FF;font-size:12px;font-weight:600;letter-spacing:1px;margin:0 0 8px 0;">AYLIK</p>'
 '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:800;font-size:22px;">Premium Paket</h3>'
-'<p style="color:#888;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
+'<p style="color:#8E8E93;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
 '<p style="color:#F5F5F7;font-size:32px;font-weight:800;margin:0 0 4px 0;">600 TL</p>'
-'<p style="color:#666;font-size:13px;margin:0 0 24px 0;">/ ay</p>'
+'<p style="color:#8E8E93;font-size:13px;margin:0 0 24px 0;">/ ay</p>'
 '<div style="text-align:left;margin-bottom:20px;">'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Excel ile indirme</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Oncelikli destek</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Excel ile indirme</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Oncelikli destek</p>'
 '</div>'
 '</div>', unsafe_allow_html=True)
-        if st.button("Satin Al ve Yukselt", key="buy_monthly", use_container_width=True):
+        if st.button("Satin Al ve Yukselt", key="buy_monthly", type="primary", use_container_width=True):
             if PAYTR_AYLIK_LINK:
                 st.markdown(f'<meta http-equiv="refresh" content="0;url={PAYTR_AYLIK_LINK}">',
                             unsafe_allow_html=True)
@@ -906,23 +1029,23 @@ def render_paket_yukselt(user):
 
     with c2:
         st.markdown(
-'<div style="background:#161616;border:2px solid #D4D8C8;border-radius:16px;padding:32px;text-align:center;position:relative;">'
-'<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%);'
-'color:#0D0D0D;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:.5px;">AVANTAJLI</div>'
-'<p style="color:#D4D8C8;font-size:12px;font-weight:600;letter-spacing:1px;margin:0 0 8px 0;">YILLIK</p>'
+'<div style="background:#1C1C1E;border:2px solid #0A84FF;border-radius:16px;padding:32px;text-align:center;position:relative;">'
+'<div style="position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:#0A84FF;'
+'color:#FFFFFF;font-size:11px;font-weight:700;padding:4px 16px;border-radius:20px;letter-spacing:.5px;">AVANTAJLI</div>'
+'<p style="color:#0A84FF;font-size:12px;font-weight:600;letter-spacing:1px;margin:0 0 8px 0;">YILLIK</p>'
 '<h3 style="color:#F5F5F7;margin:0 0 4px 0;font-weight:800;font-size:22px;">Premium Paket</h3>'
-'<p style="color:#888;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
+'<p style="color:#8E8E93;font-size:13px;margin:0 0 20px 0;">Aylik 1.500 belge yukleme hakki</p>'
 '<p style="color:#F5F5F7;font-size:32px;font-weight:800;margin:0 0 4px 0;">5.500 TL</p>'
-'<p style="color:#666;font-size:13px;margin:0 0 24px 0;">/ yil (aylik ~458 TL)</p>'
+'<p style="color:#8E8E93;font-size:13px;margin:0 0 24px 0;">/ yil (aylik ~458 TL)</p>'
 '<div style="text-align:left;margin-bottom:20px;">'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Excel ile indirme</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; Oncelikli destek</p>'
-'<p style="color:#999;font-size:13px;margin:4px 0;">&#10003; 2 ay tasarruf</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Aylik 1.500 fatura/fis/dekont</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Yapay zeka ile otomatik okuma</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Excel ile indirme</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; Oncelikli destek</p>'
+'<p style="color:#D1D1D6;font-size:13px;margin:6px 0;">&#10003; 2 ay tasarruf</p>'
 '</div>'
 '</div>', unsafe_allow_html=True)
-        if st.button("Satin Al ve Yukselt", key="buy_yearly", use_container_width=True):
+        if st.button("Satin Al ve Yukselt", key="buy_yearly", type="primary", use_container_width=True):
             if PAYTR_YILLIK_LINK:
                 st.markdown(f'<meta http-equiv="refresh" content="0;url={PAYTR_YILLIK_LINK}">',
                             unsafe_allow_html=True)
@@ -944,9 +1067,9 @@ def render_admin_panel():
 
     c1, c2 = st.columns(2)
     with c1:
-        st.markdown(stat_card("Toplam Uye", str(len(all_users)), "#D4D8C8"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Uye", str(len(all_users)), "#0A84FF"), unsafe_allow_html=True)
     with c2:
-        st.markdown(stat_card("Toplam Okutulan Belge", str(total_belge), "#D4D8C8"), unsafe_allow_html=True)
+        st.markdown(stat_card("Toplam Okutulan Belge", str(total_belge), "#0A84FF"), unsafe_allow_html=True)
 
     st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
     st.markdown(card_dark(
@@ -957,17 +1080,17 @@ def render_admin_panel():
         ref_str = u.get("referans_kodu", "") or "-"
         reg_date = format_date_tr(u.get("created_at", ""))
         row_html = (
-            '<div style="background:#161616;border:1px solid #1E1E1E;border-radius:12px;'
+            '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
             'padding:14px 20px;margin-bottom:6px;">'
             f'<span style="color:#F5F5F7;font-weight:600;font-size:14px;">{u["ad"]} / {u["email"]}</span>'
-            f'<span style="color:#555;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#D4D8C8;font-weight:600;font-size:13px;">{u["paket"]}</span>'
-            f'<span style="color:#555;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#888;font-size:13px;">Kullanim: {u["kullanilan_belge"]}/{u["kota"]}</span>'
-            f'<span style="color:#555;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#888;font-size:13px;">Referans: {ref_str}</span>'
-            f'<span style="color:#555;font-size:13px;"> &mdash; </span>'
-            f'<span style="color:#888;font-size:13px;">Kayit: {reg_date}</span>'
+            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#0A84FF;font-weight:600;font-size:13px;">{u["paket"]}</span>'
+            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#8E8E93;font-size:13px;">Kullanim: {u["kullanilan_belge"]}/{u["kota"]}</span>'
+            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#8E8E93;font-size:13px;">Referans: {ref_str}</span>'
+            f'<span style="color:#636366;font-size:13px;"> &mdash; </span>'
+            f'<span style="color:#8E8E93;font-size:13px;">Kayit: {reg_date}</span>'
             '</div>'
         )
         st.markdown(row_html, unsafe_allow_html=True)
@@ -987,7 +1110,7 @@ def render_admin_panel():
         if selected_u["paket"] in paket_options:
             current_idx = paket_options.index(selected_u["paket"])
         new_paket = st.selectbox("Yeni Paket", paket_options, index=current_idx, key="admin_paket_sel")
-        if st.button("Paketi Guncelle", key="admin_update_pkg"):
+        if st.button("Paketi Guncelle", key="admin_update_pkg", type="primary"):
             update_user_package(selected_uid, new_paket)
             st.success(f"{selected_user_label} kullanicisinin paketi '{new_paket}' olarak guncellendi.")
             st.rerun()
@@ -999,20 +1122,20 @@ def render_admin_panel():
 
     all_txns = get_all_transactions_admin()
     if not all_txns:
-        st.markdown('<p style="color:#666;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
+        st.markdown('<p style="color:#8E8E93;text-align:center;padding:20px;">Henuz islem bulunmuyor.</p>',
                     unsafe_allow_html=True)
     else:
         for t in all_txns[:50]:
-            tip_color = "#7ECF8A" if t.get("islem_tipi") == "Gelir" else "#E57373"
+            tip_color = "#30D158" if t.get("islem_tipi") == "Gelir" else "#FF453A"
             tip_sign = "+" if t.get("islem_tipi") == "Gelir" else "-"
             row_html = (
-                '<div style="background:#161616;border:1px solid #1E1E1E;border-radius:12px;'
+                '<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:12px;'
                 'padding:12px 20px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">'
                 '<div>'
-                f'<span style="color:#D4D8C8;font-size:12px;font-weight:600;">{t.get("ad","?")} / {t.get("email","?")}</span>'
-                f'<span style="color:#444;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
-                f'<span style="color:#555;font-size:12px;margin-left:10px;">{t.get("firma","—")}</span>'
-                f'<span style="color:#555;font-size:12px;margin-left:10px;">{t.get("kategori","")}</span>'
+                f'<span style="color:#0A84FF;font-size:12px;font-weight:600;">{t.get("ad","?")} / {t.get("email","?")}</span>'
+                f'<span style="color:#636366;font-size:12px;margin-left:10px;">{format_date_tr(t.get("tarih",""))}</span>'
+                f'<span style="color:#8E8E93;font-size:12px;margin-left:10px;">{t.get("firma","—")}</span>'
+                f'<span style="color:#8E8E93;font-size:12px;margin-left:10px;">{t.get("kategori","")}</span>'
                 '</div>'
                 f'<span style="color:{tip_color};font-weight:700;font-size:14px;">{tip_sign} {format_tl(t.get("tutar",0))}</span>'
                 '</div>'
@@ -1041,21 +1164,23 @@ def main():
         render_auth_page()
         return
 
-    # --- Sidebar ---
+    # --- Sidebar (Apple iOS Settings Tarzı) ---
     with st.sidebar:
         st.markdown(
-'<div style="padding:16px 0 8px 0;text-align:center;">'
-'<h2 style="color:#F5F5F7;font-weight:800;font-size:26px;letter-spacing:-0.5px;margin:0;">Finanser</h2>'
-'<div style="width:40px;height:3px;background:linear-gradient(135deg,#E8E6D9 0%,#D4D8C8 50%,#C5C6C7 100%);'
-'margin:8px auto 0 auto;border-radius:2px;"></div>'
+'<div style="padding:12px 4px 10px 4px;">'
+'<h2 style="color:#F5F5F7;font-weight:800;font-size:28px;letter-spacing:-0.8px;margin:0;">Finanser</h2>'
 '</div>', unsafe_allow_html=True)
 
+        # Apple iOS Profil Kartı
+        initials = "".join([part[0].upper() for part in user["ad"].split()[:2]]) or "U"
         st.markdown(
-'<div style="background:#1A1A1A;border-radius:12px;padding:14px 16px;margin:16px 0;">'
-f'<p style="color:#F5F5F7;font-weight:600;font-size:14px;margin:0;">{user["ad"]}</p>'
-f'<p style="color:#666;font-size:12px;margin:4px 0 0 0;">{user["email"]}</p>'
-f'<p style="color:#D4D8C8;font-size:11px;font-weight:600;margin:6px 0 0 0;">'
-f'{user["paket"]} &mdash; {user["kullanilan_belge"]}/{user["kota"]} belge</p>'
+'<div style="background:#1C1C1E;border:1px solid #2C2C2E;border-radius:14px;padding:14px;margin:8px 0 18px 0;display:flex;align-items:center;gap:12px;">'
+f'<div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#0A84FF,#0055D4);color:#FFF;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;flex-shrink:0;">{initials}</div>'
+'<div style="overflow:hidden;">'
+f'<p style="color:#F5F5F7;font-weight:600;font-size:15px;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["ad"]}</p>'
+f'<p style="color:#8E8E93;font-size:12px;margin:2px 0 0 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{user["email"]}</p>'
+f'<p style="color:#0A84FF;font-size:11px;font-weight:600;margin:4px 0 0 0;">{user["paket"]} &bull; {user["kullanilan_belge"]}/{user["kota"]} belge</p>'
+'</div>'
 '</div>', unsafe_allow_html=True)
 
         pages = ["Genel Bakis", "Belge Yukle", "Manuel Giris", "Islemlerim", "Paket Yukselt"]
@@ -1069,8 +1194,8 @@ f'{user["paket"]} &mdash; {user["kullanilan_belge"]}/{user["kota"]} belge</p>'
         page = st.radio("Menu", pages, index=default_idx, label_visibility="collapsed", key="sidebar_nav")
         st.session_state.nav_page = page
 
-        st.markdown('<div style="height:12px;"></div>', unsafe_allow_html=True)
-        if st.button("Cikis Yap", key="logout_btn", use_container_width=True):
+        st.markdown('<div style="height:16px;"></div>', unsafe_allow_html=True)
+        if st.button("Cikis Yap", key="logout_btn", type="secondary", use_container_width=True):
             logout_user(user["id"])
             if "token" in st.query_params:
                 del st.query_params["token"]
