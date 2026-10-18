@@ -86,28 +86,22 @@ html, body, .stApp, p, label, input, textarea, button {
     color: #2B3326;
 }
 
-/* MOYA Tarzı Zarif Serif Başlıklar */
+/* MOYA Tarzı Zarif Serif Başlıklar (Bakiye yazısındaki !important kaldırıldı) */
 h1, h2, h3, .serif-title {
     font-family: 'Cormorant Garamond', Georgia, serif !important;
-    color: #2B3326 !important;
     letter-spacing: 0.3px !important;
 }
 
 /* Ana Arka Plan: Sıcak Krem / Bej */
-.stApp {
+.stApp, header[data-testid="stHeader"] {
     background-color: #EAE4DC !important;
 }
 
-header[data-testid="stHeader"] {
-    background-color: #EAE4DC !important;
-}
-/* --- SOL MENÜ (2. Görseldeki Minimal Tasarım - Noktasız) --- */
+/* --- SOL MENÜ (StoreUI Minimal Görünüm) --- */
 [data-testid="stSidebar"] {
     background-color: #FBF9F6 !important;
     border-right: 1px solid #EAE4DC !important;
 }
-
-/* Menüdeki Seçili Olmayan (Normal) Satırlar */
 [data-testid="stSidebar"] button[kind="secondary"] {
     background-color: transparent !important;
     color: #7A756C !important;
@@ -118,14 +112,12 @@ header[data-testid="stHeader"] {
     font-size: 14px !important;
     font-weight: 500 !important;
     text-transform: none !important;
-    letter-spacing: 0px !important;
     justify-content: flex-start !important;
     text-align: left !important;
     margin-bottom: 2px !important;
 }
 [data-testid="stSidebar"] button[kind="secondary"] * {
     color: #7A756C !important;
-    font-weight: 500 !important;
 }
 [data-testid="stSidebar"] button[kind="secondary"]:hover {
     background-color: #F2EFE9 !important;
@@ -133,8 +125,6 @@ header[data-testid="stHeader"] {
 [data-testid="stSidebar"] button[kind="secondary"]:hover * {
     color: #1C1C1E !important;
 }
-
-/* Menüdeki Seçili Olan (Aktif) Satır — Görseldeki Yumuşak Gri Kutu & Koyu Yazı */
 [data-testid="stSidebar"] button[kind="primary"] {
     background-color: #EFECE6 !important;
     color: #1C1C1E !important;
@@ -145,7 +135,6 @@ header[data-testid="stHeader"] {
     font-size: 14px !important;
     font-weight: 700 !important;
     text-transform: none !important;
-    letter-spacing: 0px !important;
     justify-content: flex-start !important;
     text-align: left !important;
     margin-bottom: 2px !important;
@@ -154,12 +143,12 @@ header[data-testid="stHeader"] {
     color: #1C1C1E !important;
     font-weight: 700 !important;
 }
-/* --- BUTONLAR (MOYA Koyu Zeytin Yeşili & Tam Okunurluk) --- */
-.stButton > button,
+
+/* --- BUTONLAR (MOYA Koyu Zeytin Yeşili) --- */
+.stButton > button:not([kind="secondary"]),
 .stFormSubmitButton > button,
 .stDownloadButton > button {
     background-color: #3A4432 !important;
-    background-image: none !important;
     color: #F6F3EE !important;
     font-weight: 600 !important;
     font-size: 13px !important;
@@ -168,98 +157,72 @@ header[data-testid="stHeader"] {
     border: none !important;
     border-radius: 12px !important;
     padding: 12px 24px !important;
-    transition: all 0.2s ease !important;
     box-shadow: 0 2px 8px rgba(58, 68, 50, 0.15) !important;
 }
-
-.stButton > button *,
+.stButton > button:not([kind="secondary"]) *,
 .stFormSubmitButton > button *,
 .stDownloadButton > button * {
     color: #F6F3EE !important;
 }
-
-.stButton > button:hover,
+.stButton > button:not([kind="secondary"]):hover,
 .stFormSubmitButton > button:hover,
 .stDownloadButton > button:hover {
     background-color: #2B3326 !important;
-    transform: translateY(-1px) !important;
 }
 
-/* İkincil Butonlar (Çıkış Yap, İptal vb.) — Minimal Çerçeveli */
-button[kind="secondary"] {
-    background-color: transparent !important;
-    border: 1px solid #C5BBAE !important;
-    box-shadow: none !important;
+/* --- INPUT VE AÇILIR MENÜ (Görünmez Yazı & Karanlık Mod Hatası Çözümü) --- */
+.stTextInput > div > div > input,
+.stNumberInput > div > div > input,
+.stDateInput > div > div > input,
+.stTextArea textarea,
+.stSelectbox > div > div {
+    background-color: #FBF9F6 !important;
+    color: #1C1C1E !important;
+    -webkit-text-fill-color: #1C1C1E !important; 
+    border: 1px solid #D5CDC2 !important;
+    border-radius: 12px !important;
 }
-button[kind="secondary"] * {
-    color: #5C5852 !important;
+
+::placeholder {
+    color: #9E9689 !important;
+    -webkit-text-fill-color: #9E9689 !important;
 }
-button[kind="secondary"]:hover {
-    background-color: #DFD8CE !important;
-    border-color: #3A4432 !important;
+
+/* Dropdown (Açılır Menü) Stilleri */
+[data-baseweb="select"] * { 
+    color: #1C1C1E !important; 
 }
-button[kind="secondary"]:hover * {
-    color: #2B3326 !important;
+[data-baseweb="popover"], [data-baseweb="menu"], [role="listbox"] { 
+    background-color: #FBF9F6 !important; 
+    border: 1px solid #D5CDC2 !important; 
+}
+[role="option"] { 
+    color: #1C1C1E !important; 
+    background-color: transparent !important; 
+}
+[role="option"]:hover, [aria-selected="true"] { 
+    background-color: #E1D9CE !important; 
+    color: #3A4432 !important; 
 }
 
 /* --- FILE UPLOADER --- */
 [data-testid="stFileUploader"] {
-    background-color: #F6F3EE !important;
+    background-color: #FBF9F6 !important;
     border-radius: 16px !important;
     border: 1px dashed #C5BBAE !important;
     padding: 22px !important;
 }
-[data-testid="stFileUploader"] section {
-    background-color: transparent !important;
-}
+[data-testid="stFileUploader"] section { background-color: transparent !important; }
 [data-testid="stFileUploader"] button {
     background-color: #3A4432 !important;
     color: #F6F3EE !important;
-    font-weight: 600 !important;
     border-radius: 10px !important;
     border: none !important;
     padding: 8px 18px !important;
 }
-[data-testid="stFileUploader"] button * {
-    color: #F6F3EE !important;
-}
+[data-testid="stFileUploader"] button * { color: #F6F3EE !important; }
 [data-testid="stFileUploader"] [data-testid="stBaseButton-secondary"] span[data-testid="stIconMaterial"],
-[data-testid="stFileUploader"] small + span {
-    display: none !important;
-}
-
-/* --- INPUT ALANLARI --- */
-.stTextInput > div > div > input,
-.stNumberInput > div > div > input,
-.stDateInput > div > div > input,
-.stTextArea textarea {
-    background-color: #F6F3EE !important;
-    color: #2B3326 !important;
-    border: 1px solid #D5CDC2 !important;
-    border-radius: 12px !important;
-}
-.stTextInput > div > div > input::placeholder,
-.stTextArea textarea::placeholder {
-    color: #9E9689 !important;
-}
-.stTextInput > div > div > input:focus,
-.stNumberInput > div > div > input:focus,
-.stTextArea textarea:focus {
-    border-color: #3A4432 !important;
-    box-shadow: 0 0 0 1px #3A4432 !important;
-}
-.stSelectbox > div > div {
-    background-color: #F6F3EE !important;
-    color: #2B3326 !important;
-    border: 1px solid #D5CDC2 !important;
-    border-radius: 12px !important;
-}
-[data-baseweb="select"] * { color: #2B3326 !important; }
-[data-baseweb="popover"] { background-color: #F6F3EE !important; border: 1px solid #D5CDC2 !important; }
-[data-baseweb="menu"] { background-color: #F6F3EE !important; }
-[role="option"] { color: #2B3326 !important; }
-[role="option"]:hover { background-color: #EAE4DC !important; }
-[aria-selected="true"] { background-color: #3A4432 !important; color: #F6F3EE !important; }
+[data-testid="stFileUploader"] small + span { display: none !important; }
 
 .InputInstructions, [data-testid="InputInstructions"] { display: none !important; }
 footer { visibility: hidden !important; }
@@ -271,6 +234,7 @@ footer { visibility: hidden !important; }
     padding: 26px !important;
 }
 </style>"""
+    st.markdown(css, unsafe_allow_html=True)
     st.markdown(css, unsafe_allow_html=True)
 
 
@@ -946,6 +910,7 @@ def render_manuel_giris(user):
                     user["id"], tarih_str, m_tip, m_kat, m_firma.strip(),
                     m_tutar, m_kdv, m_aciklama.strip(), "Manuel", "Manuel",
                 )
+                increment_belge(user["id"])
                 st.success("Islem basariyla kaydedildi.")
                 st.rerun()
 
